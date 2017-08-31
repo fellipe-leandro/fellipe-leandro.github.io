@@ -16,8 +16,8 @@ COMMENT *PROGRAMA EXEMPLO FEITO EM UMA UNICA PROCEDURE -
 	.DATA
 
 SENHA1  DB  "casa"
-val1	DW 	00H
-val2 	DW	00H
+;val1	DW 	00H
+;val2 	DW	00H
 MSG_1   DB 'Bem-vindo','$'
 MSG_2	DB 'Digite sua senha','$'
 MSG_ERR DB 'Senha errada, digite novamente','$'
