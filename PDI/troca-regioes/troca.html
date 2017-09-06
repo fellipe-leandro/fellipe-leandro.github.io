@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="generator" content="Asciidoctor 0.1.4">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contagem de objetos</title>
+<title>Troca de Regiões</title>
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
 article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary { display: block; }
@@ -426,16 +426,21 @@ span.icon > [class^="icon-"], span.icon > [class*=" icon-"] { cursor: default; }
 </head>
 <body class="article">
 <div id="header">
-<h1>Contagem de objetos</h1>
-<span id="author" class="author">Fellipe Leandro</span><br>
-<span id="email" class="email"><a href="mailto:faugusto12@gmail.com">faugusto12@gmail.com</a></span><br>
+<h1>Troca de Regiões</h1>
+<span id="author" class="author">Fellipe Augusto</span><br><span id="author2" class="author">Jessika Cristina</span><br>
 </div>
 <div id="content">
 <div class="sect1">
 <h2 id="_defini_o_do_problema">Definição do problema</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>O problema consiste em determinar a quantidade de objetos em uma cena. No caso em questão, os objetos assumem o formato de bolhas. Deve-se sugerir um algoritmo de processamento digital de imagens para realizar a contagem das bolhas.</p>
+<p>A aplicação a ser desenvolvida deve realizar a troca dos quadrantes de uma imagem em diagonal</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../imgs/biel.png" alt="biel">
+</div>
+<div class="title">Figure 1. Imagem a ser manipulada</div>
 </div>
 </div>
 </div>
@@ -443,121 +448,102 @@ span.icon > [class^="icon-"], span.icon > [class*=" icon-"] { cursor: default; }
 <h2 id="_solu_o_proposta">Solução proposta</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A solução proposta baseia-se no algoritmo <em>seedFill</em> ou <em>floodfill</em></p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="imgs/bolhas.png" alt="bolhas">
-</div>
-<div class="title">Figure 1. Cena com objetos a serem contados</div>
+<p>A ideia proposta para esse problema baseia-se em criar submatrizes que aloquem cada quadrante da imagem original. Após isso, é realizado o preenchimento de uma matriz-destino na sequência correta de forma a corresponder a troca de quadrantes.</p>
 </div>
 <div class="listingblock">
 <div class="title">main.cpp</div>
 <div class="content">
 <pre class="pygments highlight"><code class="cpp language-cpp"><span class="tok-cp">#include &lt;iostream&gt;</span>
 <span class="tok-cp">#include &lt;opencv2/opencv.hpp&gt;</span>
+
 <span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">cv</span><span class="tok-p">;</span>
 <span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">std</span><span class="tok-p">;</span>
+<span class="tok-kt">void</span> <span class="tok-nf">dofor</span><span class="tok-p">(</span><span class="tok-n">Mat</span> <span class="tok-o">&amp;</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">Mat</span> <span class="tok-o">&amp;</span><span class="tok-n">sub_image</span><span class="tok-p">,</span><span class="tok-kt">int</span> <span class="tok-n">i_start</span><span class="tok-p">,</span><span class="tok-kt">int</span> <span class="tok-n">i_end</span><span class="tok-p">,</span><span class="tok-kt">int</span> <span class="tok-n">j_start</span><span class="tok-p">,</span><span class="tok-kt">int</span> <span class="tok-n">j_end</span><span class="tok-p">){</span>
+	<span class="tok-c1">//i_aux e j_aux são usados para percorrer a subimagem</span>
+    <span class="tok-kt">int</span> <span class="tok-n">i_aux</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-kt">int</span> <span class="tok-n">j_aux</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span><span class="tok-o">=</span><span class="tok-n">i_start</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">&lt;</span><span class="tok-n">i_end</span><span class="tok-p">;</span><span class="tok-n">i</span><span class="tok-o">++</span><span class="tok-p">){</span>
+        <span class="tok-n">j_aux</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span>
 
+        <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">j</span><span class="tok-o">=</span><span class="tok-n">j_start</span><span class="tok-p">;</span><span class="tok-n">j</span><span class="tok-o">&lt;</span><span class="tok-n">j_end</span><span class="tok-p">;</span><span class="tok-n">j</span><span class="tok-o">++</span><span class="tok-p">){</span>
+            <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span><span class="tok-n">j</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-n">sub_image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i_aux</span><span class="tok-p">,</span><span class="tok-n">j_aux</span><span class="tok-p">)</span><span class="tok-o">+</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+            <span class="tok-n">j_aux</span><span class="tok-o">++</span><span class="tok-p">;</span>
+        <span class="tok-p">}</span>
+        <span class="tok-n">i_aux</span><span class="tok-o">++</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+
+<span class="tok-p">}</span>
 <span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">()</span>
-<span class="tok-p">{</span>
-    <span class="tok-n">Mat</span> <span class="tok-n">image</span><span class="tok-p">;</span>
-    <span class="tok-kt">int</span> <span class="tok-n">width</span><span class="tok-p">,</span><span class="tok-n">height</span><span class="tok-p">;</span>
-    <span class="tok-kt">int</span> <span class="tok-n">nobj</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span>
-    <span class="tok-kt">int</span> <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-mi">80</span><span class="tok-p">][</span><span class="tok-mi">2</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-p">{</span><span class="tok-mi">0</span><span class="tok-p">};</span>
-    <span class="tok-kt">int</span> <span class="tok-n">fila_pos</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span>
-    <span class="tok-kt">int</span> <span class="tok-n">contfilaPos</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span>
-    <span class="tok-n">image</span> <span class="tok-o">=</span> <span class="tok-n">imread</span><span class="tok-p">(</span><span class="tok-s">&quot;bolhas.png&quot;</span><span class="tok-p">,</span><span class="tok-n">CV_LOAD_IMAGE_GRAYSCALE</span><span class="tok-p">);</span>
+<span class="tok-p">{</span>   <span class="tok-n">Mat</span> <span class="tok-n">image</span><span class="tok-p">;</span>
+    <span class="tok-n">Mat</span> <span class="tok-n">image1</span><span class="tok-p">(</span><span class="tok-n">Size</span><span class="tok-p">(</span><span class="tok-mi">256</span><span class="tok-p">,</span><span class="tok-mi">256</span><span class="tok-p">),</span><span class="tok-n">CV_8UC1</span><span class="tok-p">);</span>
+    <span class="tok-n">Mat</span> <span class="tok-n">sub_image1</span><span class="tok-p">,</span><span class="tok-n">sub_image2</span><span class="tok-p">,</span><span class="tok-n">sub_image3</span><span class="tok-p">,</span><span class="tok-n">sub_image4</span><span class="tok-p">;</span>
+    <span class="tok-n">image</span><span class="tok-o">=</span><span class="tok-n">imread</span><span class="tok-p">(</span><span class="tok-s">&quot;biel.png&quot;</span><span class="tok-p">,</span><span class="tok-n">CV_LOAD_IMAGE_GRAYSCALE</span><span class="tok-p">);</span>
     <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">data</span><span class="tok-p">)</span>
         <span class="tok-n">cout</span><span class="tok-o">&lt;&lt;</span><span class="tok-s">&quot;Nao abriu imagem&quot;</span><span class="tok-o">&lt;&lt;</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+    <span class="tok-n">sub_image1</span><span class="tok-o">=</span><span class="tok-n">image</span><span class="tok-p">(</span><span class="tok-n">Range</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">127</span><span class="tok-p">),</span><span class="tok-n">Range</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">127</span><span class="tok-p">));</span>        <span class="tok-c1">//IIQ</span>
+    <span class="tok-n">sub_image2</span><span class="tok-o">=</span><span class="tok-n">image</span><span class="tok-p">(</span><span class="tok-n">Range</span><span class="tok-p">(</span><span class="tok-mi">128</span><span class="tok-p">,</span><span class="tok-mi">255</span><span class="tok-p">),</span><span class="tok-n">Range</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">127</span><span class="tok-p">));</span>      <span class="tok-c1">//IIIQ</span>
+    <span class="tok-n">sub_image3</span><span class="tok-o">=</span><span class="tok-n">image</span><span class="tok-p">(</span><span class="tok-n">Range</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">127</span><span class="tok-p">),</span><span class="tok-n">Range</span><span class="tok-p">(</span><span class="tok-mi">128</span><span class="tok-p">,</span><span class="tok-mi">255</span><span class="tok-p">));</span>      <span class="tok-c1">//IQ</span>
+    <span class="tok-n">sub_image4</span><span class="tok-o">=</span><span class="tok-n">image</span><span class="tok-p">(</span><span class="tok-n">Range</span><span class="tok-p">(</span><span class="tok-mi">128</span><span class="tok-p">,</span><span class="tok-mi">255</span><span class="tok-p">),</span><span class="tok-n">Range</span><span class="tok-p">(</span><span class="tok-mi">128</span><span class="tok-p">,</span><span class="tok-mi">255</span><span class="tok-p">));</span>    <span class="tok-c1">//IVQ</span>
+    <span class="tok-n">dofor</span><span class="tok-p">(</span><span class="tok-n">image1</span><span class="tok-p">,</span><span class="tok-n">sub_image2</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">128</span><span class="tok-p">,</span><span class="tok-mi">128</span><span class="tok-p">,</span><span class="tok-mi">255</span><span class="tok-p">);</span>  <span class="tok-c1">//sub_image2 eh IIIQ e o range eh o primeiro</span>
+    <span class="tok-n">dofor</span><span class="tok-p">(</span><span class="tok-n">image1</span><span class="tok-p">,</span><span class="tok-n">sub_image3</span><span class="tok-p">,</span><span class="tok-mi">128</span><span class="tok-p">,</span><span class="tok-mi">256</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">128</span><span class="tok-p">);</span><span class="tok-c1">//sub_image3 eh o IQ e o range eh o terceiro</span>
+    <span class="tok-n">dofor</span><span class="tok-p">(</span><span class="tok-n">image1</span><span class="tok-p">,</span><span class="tok-n">sub_image1</span><span class="tok-p">,</span><span class="tok-mi">128</span><span class="tok-p">,</span><span class="tok-mi">256</span><span class="tok-p">,</span><span class="tok-mi">128</span><span class="tok-p">,</span><span class="tok-mi">256</span><span class="tok-p">);</span><span class="tok-c1">//sub_image1 eh o IIQ e o range eh o quarto</span>
+    <span class="tok-n">dofor</span><span class="tok-p">(</span><span class="tok-n">image1</span><span class="tok-p">,</span><span class="tok-n">sub_image4</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">128</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">128</span><span class="tok-p">);</span>   <span class="tok-c1">//sub_image4 eh o IV4 e o range, o segundo</span>
     <span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;janela1&quot;</span><span class="tok-p">,</span><span class="tok-n">WINDOW_AUTOSIZE</span><span class="tok-p">);</span>
-    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;janela1&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
-    <span class="tok-c1">//waitKey();</span>
-
-    <span class="tok-n">width</span> <span class="tok-o">=</span> <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">size</span><span class="tok-p">().</span><span class="tok-n">width</span><span class="tok-p">;</span>
-    <span class="tok-n">height</span> <span class="tok-o">=</span> <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">size</span><span class="tok-p">().</span><span class="tok-n">height</span><span class="tok-p">;</span>
-    <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span><span class="tok-n">i</span><span class="tok-o">&lt;</span><span class="tok-n">height</span><span class="tok-p">;</span><span class="tok-n">i</span><span class="tok-o">++</span><span class="tok-p">){</span>
-        <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">j</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span><span class="tok-n">j</span><span class="tok-o">&lt;</span><span class="tok-n">width</span><span class="tok-p">;</span><span class="tok-n">j</span><span class="tok-o">++</span><span class="tok-p">){</span>
-            <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span><span class="tok-n">j</span><span class="tok-p">)</span><span class="tok-o">==</span><span class="tok-mi">255</span><span class="tok-p">){</span> <span class="tok-c1">//pixel encontrado é branco</span>
-                <span class="tok-n">contfilaPos</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-c1">//primeira posição da fila</span>
-                <span class="tok-n">fila_pos</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span>
-                <span class="tok-n">nobj</span><span class="tok-o">++</span><span class="tok-p">;</span>       <span class="tok-c1">//mais um objeto encontrado</span>
-                <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-n">i</span><span class="tok-p">;</span> <span class="tok-c1">//primeiro elemento da  fila: semente</span>
-                <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-n">j</span><span class="tok-p">;</span>
-                <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">],(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]))</span><span class="tok-o">=</span><span class="tok-mi">60</span><span class="tok-p">;</span> <span class="tok-c1">//rotular ponto, mudando-o de cor</span>
-                <span class="tok-k">while</span><span class="tok-p">(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">!=-</span><span class="tok-mi">1</span><span class="tok-p">){</span> <span class="tok-c1">//começar a busca por vizinhos (4-vizinhos)</span>
-
-                    <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">],</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">)</span><span class="tok-o">==</span><span class="tok-mi">255</span><span class="tok-p">){</span> <span class="tok-c1">//vizinho da esquerda</span>
-                        <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">],(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">))</span><span class="tok-o">=</span><span class="tok-mi">15</span><span class="tok-p">;</span>
-                        <span class="tok-c1">//fila_pos++;</span>
-                        <span class="tok-n">contfilaPos</span><span class="tok-o">++</span><span class="tok-p">;</span> <span class="tok-c1">//final da fila</span>
-                        <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">contfilaPos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">];</span> <span class="tok-c1">//guardar posição do vizinho no final da fila</span>
-                        <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">contfilaPos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">;</span>
-                    <span class="tok-p">}</span>
-                    <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">],(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">+</span><span class="tok-mi">1</span><span class="tok-p">))</span><span class="tok-o">==</span><span class="tok-mi">255</span><span class="tok-p">){</span> <span class="tok-c1">//vizinho da direita</span>
-                        <span class="tok-c1">//mudar cor</span>
-                        <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">],(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">+</span><span class="tok-mi">1</span><span class="tok-p">))</span><span class="tok-o">=</span><span class="tok-mi">15</span><span class="tok-p">;</span>
-                        <span class="tok-c1">//fila_pos++;</span>
-                        <span class="tok-n">contfilaPos</span><span class="tok-o">++</span><span class="tok-p">;</span>
-                        <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">contfilaPos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">];</span>
-                        <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">contfilaPos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">+</span><span class="tok-mi">1</span><span class="tok-p">;</span>
-                    <span class="tok-p">}</span>
-                    <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">+</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">])</span><span class="tok-o">==</span><span class="tok-mi">255</span><span class="tok-p">){</span> <span class="tok-c1">//vizinho de cima</span>
-
-                        <span class="tok-c1">//mudar cor</span>
-                        <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">+</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">])</span><span class="tok-o">=</span><span class="tok-mi">15</span><span class="tok-p">;</span>
-                        <span class="tok-c1">//fila_pos++;</span>
-                        <span class="tok-n">contfilaPos</span><span class="tok-o">++</span><span class="tok-p">;</span>
-                        <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">contfilaPos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">+</span><span class="tok-mi">1</span><span class="tok-p">;</span>
-                        <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">contfilaPos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">];</span>
-
-                    <span class="tok-p">}</span>
-                    <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">])</span><span class="tok-o">==</span><span class="tok-mi">255</span><span class="tok-p">){</span> <span class="tok-c1">//vizinho de baixo</span>
-                        <span class="tok-c1">//mudar cor</span>
-                        <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">])</span><span class="tok-o">=</span><span class="tok-mi">15</span><span class="tok-p">;</span>
-                        <span class="tok-c1">//fila_pos++</span>
-                        <span class="tok-n">contfilaPos</span><span class="tok-o">++</span><span class="tok-p">;</span>
-                        <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">contfilaPos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">;</span>
-                        <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">contfilaPos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span> <span class="tok-o">=</span> <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">fila_pos</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">];</span>
-                    <span class="tok-p">}</span>
-                    <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">aux</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span><span class="tok-n">aux</span><span class="tok-o">&lt;</span><span class="tok-n">contfilaPos</span><span class="tok-o">&amp;&amp;</span><span class="tok-n">aux</span><span class="tok-o">&lt;</span><span class="tok-mi">79</span><span class="tok-p">;</span><span class="tok-n">aux</span><span class="tok-o">++</span><span class="tok-p">){</span> <span class="tok-c1">//esse for implementa um &#39;pop&#39; na fila. O vizinho passa  a ser nova semente</span>
-                        <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">aux</span><span class="tok-o">==</span><span class="tok-mi">70</span><span class="tok-p">){</span>
-                            <span class="tok-n">cout</span><span class="tok-o">&lt;&lt;</span><span class="tok-s">&quot;Perigo&quot;</span><span class="tok-o">&lt;&lt;</span><span class="tok-n">endl</span><span class="tok-p">;</span>
-                        <span class="tok-p">}</span>
-                        <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">aux</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">aux</span><span class="tok-o">+</span><span class="tok-mi">1</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">];</span>
-                        <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">aux</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">=</span><span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">aux</span><span class="tok-o">+</span><span class="tok-mi">1</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">];</span>
-
-                    <span class="tok-p">}</span>
-                    <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">aux1</span><span class="tok-o">=</span><span class="tok-n">contfilaPos</span><span class="tok-p">;</span><span class="tok-n">aux1</span><span class="tok-o">&lt;</span><span class="tok-mi">80</span><span class="tok-p">;</span><span class="tok-n">aux1</span><span class="tok-o">++</span><span class="tok-p">){</span> <span class="tok-c1">//gambiarra para o while</span>
-                            <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">aux1</span><span class="tok-p">][</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">=-</span><span class="tok-mi">1</span><span class="tok-p">;</span>
-                            <span class="tok-n">fila</span><span class="tok-p">[</span><span class="tok-n">aux1</span><span class="tok-p">][</span><span class="tok-mi">1</span><span class="tok-p">]</span><span class="tok-o">=-</span><span class="tok-mi">1</span><span class="tok-p">;</span>
-
-                        <span class="tok-p">}</span>
-                    <span class="tok-n">contfilaPos</span><span class="tok-o">--</span><span class="tok-p">;</span> <span class="tok-c1">//para não pular uma posição na fila quando começar a proxima iteração</span>
-                    <span class="tok-p">}</span>
-
-
-                <span class="tok-p">}</span>
-
-            <span class="tok-p">}</span>
-
-        <span class="tok-p">}</span>
-    <span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;janela&quot;</span><span class="tok-p">,</span><span class="tok-n">WINDOW_AUTOSIZE</span><span class="tok-p">);</span>
-    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;janela&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
-    <span class="tok-n">imwrite</span><span class="tok-p">(</span><span class="tok-s">&quot;fill.png&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;janela1&quot;</span><span class="tok-p">,</span> <span class="tok-n">image1</span><span class="tok-p">);</span>
     <span class="tok-n">waitKey</span><span class="tok-p">();</span>
-    <span class="tok-n">cout</span><span class="tok-o">&lt;&lt;</span><span class="tok-s">&quot;Numero de bolhas: &quot;</span><span class="tok-o">&lt;&lt;</span><span class="tok-n">nobj</span><span class="tok-o">&lt;&lt;</span><span class="tok-n">endl</span><span class="tok-p">;</span>
-        <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
-    <span class="tok-p">}</span>
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
 </code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>A função <em>dofor()</em> foi implementada devido à troca de regiões ser um processo repetitivo</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code class="cpp language-cpp"><span class="tok-kt">void</span> <span class="tok-nf">dofor</span><span class="tok-p">(</span><span class="tok-n">Mat</span> <span class="tok-o">&amp;</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">Mat</span> <span class="tok-o">&amp;</span><span class="tok-n">sub_image</span><span class="tok-p">,</span><span class="tok-kt">int</span> <span class="tok-n">i_start</span><span class="tok-p">,</span><span class="tok-kt">int</span> <span class="tok-n">i_end</span><span class="tok-p">,</span><span class="tok-kt">int</span> <span class="tok-n">j_start</span><span class="tok-p">,</span><span class="tok-kt">int</span> <span class="tok-n">j_end</span><span class="tok-p">){</span>
+    <span class="tok-kt">int</span> <span class="tok-n">i_aux</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-kt">int</span> <span class="tok-n">j_aux</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+    <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span><span class="tok-o">=</span><span class="tok-n">i_start</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">&lt;</span><span class="tok-n">i_end</span><span class="tok-p">;</span><span class="tok-n">i</span><span class="tok-o">++</span><span class="tok-p">){</span>
+        <span class="tok-n">j_aux</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+
+        <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">j</span><span class="tok-o">=</span><span class="tok-n">j_start</span><span class="tok-p">;</span><span class="tok-n">j</span><span class="tok-o">&lt;</span><span class="tok-n">j_end</span><span class="tok-p">;</span><span class="tok-n">j</span><span class="tok-o">++</span><span class="tok-p">){</span>
+            <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span><span class="tok-n">j</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-n">sub_image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i_aux</span><span class="tok-p">,</span><span class="tok-n">j_aux</span><span class="tok-p">)</span><span class="tok-o">+</span><span class="tok-mi">0</span><span class="tok-p">;</span>
+            <span class="tok-n">j_aux</span><span class="tok-o">++</span><span class="tok-p">;</span>
+        <span class="tok-p">}</span>
+        <span class="tok-n">i_aux</span><span class="tok-o">++</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+
+<span class="tok-p">}</span>
+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ela recebe como parâmetros a imagem-destino, a subimagem de algum quadrante, e a região onde os pixels dessa subimagem serão transferidos para a imagem destino.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_resultado_e_considera_es_finais">Resultado e Considerações Finais</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A saída do programa exibe a imagem com os quadrantes trocados:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../imgs/troca-regioes.png" alt="troca regioes">
+</div>
+<div class="title">Figure 2. Imagem de saída da aplicação</div>
+</div>
+<div class="paragraph">
+<p>Planeja-se futuramente usar outras funções disponibilizadas pelo <em>OpenCV</em> para manipulações de submatrizes, como a <em>clone()</em> e a <em>copyTo()</em>.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-09-06 00:21:12 -03
+Last updated 2017-09-06 14:44:36 BRT
 </div>
 </div>
 </body>
