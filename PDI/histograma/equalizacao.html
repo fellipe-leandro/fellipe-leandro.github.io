@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="generator" content="Asciidoctor 0.1.4">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tarefas PDI</title>
+<title>Equalização de Histogramas</title>
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
 article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary { display: block; }
@@ -359,51 +359,252 @@ span.icon > [class^="icon-"], span.icon > [class*=" icon-"] { cursor: default; }
 .literalblock > .content > pre, .listingblock > .content > pre { -webkit-border-radius: 0; border-radius: 0; }
 
 </style>
+<style>
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #ffffff; }
+.highlight .tok-c { color: #888888 } /* Comment */
+.highlight .tok-err { color: #a61717; background-color: #e3d2d2 } /* Error */
+.highlight .tok-k { color: #008800; font-weight: bold } /* Keyword */
+.highlight .tok-cm { color: #888888 } /* Comment.Multiline */
+.highlight .tok-cp { color: #cc0000; font-weight: bold } /* Comment.Preproc */
+.highlight .tok-c1 { color: #888888 } /* Comment.Single */
+.highlight .tok-cs { color: #cc0000; font-weight: bold; background-color: #fff0f0 } /* Comment.Special */
+.highlight .tok-gd { color: #000000; background-color: #ffdddd } /* Generic.Deleted */
+.highlight .tok-ge { font-style: italic } /* Generic.Emph */
+.highlight .tok-gr { color: #aa0000 } /* Generic.Error */
+.highlight .tok-gh { color: #333333 } /* Generic.Heading */
+.highlight .tok-gi { color: #000000; background-color: #ddffdd } /* Generic.Inserted */
+.highlight .tok-go { color: #888888 } /* Generic.Output */
+.highlight .tok-gp { color: #555555 } /* Generic.Prompt */
+.highlight .tok-gs { font-weight: bold } /* Generic.Strong */
+.highlight .tok-gu { color: #666666 } /* Generic.Subheading */
+.highlight .tok-gt { color: #aa0000 } /* Generic.Traceback */
+.highlight .tok-kc { color: #008800; font-weight: bold } /* Keyword.Constant */
+.highlight .tok-kd { color: #008800; font-weight: bold } /* Keyword.Declaration */
+.highlight .tok-kn { color: #008800; font-weight: bold } /* Keyword.Namespace */
+.highlight .tok-kp { color: #008800 } /* Keyword.Pseudo */
+.highlight .tok-kr { color: #008800; font-weight: bold } /* Keyword.Reserved */
+.highlight .tok-kt { color: #888888; font-weight: bold } /* Keyword.Type */
+.highlight .tok-m { color: #0000DD; font-weight: bold } /* Literal.Number */
+.highlight .tok-s { color: #dd2200; background-color: #fff0f0 } /* Literal.String */
+.highlight .tok-na { color: #336699 } /* Name.Attribute */
+.highlight .tok-nb { color: #003388 } /* Name.Builtin */
+.highlight .tok-nc { color: #bb0066; font-weight: bold } /* Name.Class */
+.highlight .tok-no { color: #003366; font-weight: bold } /* Name.Constant */
+.highlight .tok-nd { color: #555555 } /* Name.Decorator */
+.highlight .tok-ne { color: #bb0066; font-weight: bold } /* Name.Exception */
+.highlight .tok-nf { color: #0066bb; font-weight: bold } /* Name.Function */
+.highlight .tok-nl { color: #336699; font-style: italic } /* Name.Label */
+.highlight .tok-nn { color: #bb0066; font-weight: bold } /* Name.Namespace */
+.highlight .tok-py { color: #336699; font-weight: bold } /* Name.Property */
+.highlight .tok-nt { color: #bb0066; font-weight: bold } /* Name.Tag */
+.highlight .tok-nv { color: #336699 } /* Name.Variable */
+.highlight .tok-ow { color: #008800 } /* Operator.Word */
+.highlight .tok-w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .tok-mb { color: #0000DD; font-weight: bold } /* Literal.Number.Bin */
+.highlight .tok-mf { color: #0000DD; font-weight: bold } /* Literal.Number.Float */
+.highlight .tok-mh { color: #0000DD; font-weight: bold } /* Literal.Number.Hex */
+.highlight .tok-mi { color: #0000DD; font-weight: bold } /* Literal.Number.Integer */
+.highlight .tok-mo { color: #0000DD; font-weight: bold } /* Literal.Number.Oct */
+.highlight .tok-sb { color: #dd2200; background-color: #fff0f0 } /* Literal.String.Backtick */
+.highlight .tok-sc { color: #dd2200; background-color: #fff0f0 } /* Literal.String.Char */
+.highlight .tok-sd { color: #dd2200; background-color: #fff0f0 } /* Literal.String.Doc */
+.highlight .tok-s2 { color: #dd2200; background-color: #fff0f0 } /* Literal.String.Double */
+.highlight .tok-se { color: #0044dd; background-color: #fff0f0 } /* Literal.String.Escape */
+.highlight .tok-sh { color: #dd2200; background-color: #fff0f0 } /* Literal.String.Heredoc */
+.highlight .tok-si { color: #3333bb; background-color: #fff0f0 } /* Literal.String.Interpol */
+.highlight .tok-sx { color: #22bb22; background-color: #f0fff0 } /* Literal.String.Other */
+.highlight .tok-sr { color: #008800; background-color: #fff0ff } /* Literal.String.Regex */
+.highlight .tok-s1 { color: #dd2200; background-color: #fff0f0 } /* Literal.String.Single */
+.highlight .tok-ss { color: #aa6600; background-color: #fff0f0 } /* Literal.String.Symbol */
+.highlight .tok-bp { color: #003388 } /* Name.Builtin.Pseudo */
+.highlight .tok-vc { color: #336699 } /* Name.Variable.Class */
+.highlight .tok-vg { color: #dd7700 } /* Name.Variable.Global */
+.highlight .tok-vi { color: #3333bb } /* Name.Variable.Instance */
+.highlight .tok-il { color: #0000DD; font-weight: bold } /* Literal.Number.Integer.Long */
+</style>
 </head>
 <body class="article">
 <div id="header">
-<h1>Tarefas PDI</h1>
-<span id="author" class="author">Fellipe Augusto e Jessika Cristina</span><br>
+<h1>Equalização de Histogramas</h1>
+<span id="author" class="author">Fellipe Augusto</span><br><span id="author2" class="author">Jessika Cristina</span><br>
 </div>
 <div id="content">
-<div id="preamble">
+<div class="sect1">
+<h2 id="_defini_o_do_problema">Definição do problema</h2>
 <div class="sectionbody">
-<div class="paragraph text-justify">
-<p>Essa página reúne todas as tarefas implementadas  para a disciplina Processamento Digital de Imagens durante  o semestre 2017.2</p>
+<div class="paragraph">
+<p>A aplicação a ser desenvolvida deve realizar a EQUALIZAÇÃO do histograma de imagens obtidas por meio de um fluxo de vídeo antes de exibi-las.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_unidade_1">Unidade 1</h2>
+<h2 id="_solu_o_proposta">Solução proposta</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Tarefas desenvolvidas na primeira unidade do semestre.</p>
+<p>Primeiro, definiu-se que as imagens obtidas do fluxo de vídeo seriam processadas na escala de cinza, e não nos três canais RGB. Baseando-se no exemplo (inserir link) disponibilizado pelo professor, fez-se uso de função do <em>OpenCV</em> que realiza o cálculo da equalização.</p>
+</div>
+<div class="listingblock">
+<div class="title">equalize.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code class="cpp language-cpp"><span class="tok-cp">#include &lt;iostream&gt;</span>
+<span class="tok-cp">#include &lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">std</span><span class="tok-p">;</span>
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">cv</span><span class="tok-p">;</span>
+
+
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">){</span>
+  <span class="tok-n">Mat</span> <span class="tok-n">image0</span><span class="tok-p">,</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">dest</span><span class="tok-p">;</span>
+  <span class="tok-kt">int</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-n">height</span><span class="tok-p">;</span>
+  <span class="tok-n">VideoCapture</span> <span class="tok-n">cap</span><span class="tok-p">;</span>
+  <span class="tok-n">vector</span><span class="tok-o">&lt;</span><span class="tok-n">Mat</span><span class="tok-o">&gt;</span> <span class="tok-n">planes</span><span class="tok-p">;</span>
+  <span class="tok-n">Mat</span> <span class="tok-n">histOrg</span><span class="tok-p">,</span> <span class="tok-n">histEq</span><span class="tok-p">;</span>
+  <span class="tok-kt">int</span> <span class="tok-n">nbins</span> <span class="tok-o">=</span> <span class="tok-mi">64</span><span class="tok-p">;</span>
+  <span class="tok-kt">float</span> <span class="tok-n">range</span><span class="tok-p">[]</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">256</span><span class="tok-p">};</span>
+  <span class="tok-k">const</span> <span class="tok-kt">float</span> <span class="tok-o">*</span><span class="tok-n">histrange</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-n">range</span> <span class="tok-p">};</span>
+  <span class="tok-kt">bool</span> <span class="tok-n">uniform</span> <span class="tok-o">=</span> <span class="tok-nb">true</span><span class="tok-p">;</span>
+  <span class="tok-kt">bool</span> <span class="tok-n">acummulate</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
+
+  <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">open</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">);</span>
+
+  <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">isOpened</span><span class="tok-p">()){</span>
+    <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;cameras indisponiveis&quot;</span><span class="tok-p">;</span>
+    <span class="tok-k">return</span> <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span>
+
+  <span class="tok-n">width</span>  <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_WIDTH</span><span class="tok-p">);</span>
+  <span class="tok-n">height</span> <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_HEIGHT</span><span class="tok-p">);</span>
+
+  <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;largura = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span><span class="tok-p">;</span>
+  <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;altura  = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">height</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span><span class="tok-p">;</span>
+
+  <span class="tok-kt">int</span> <span class="tok-n">histw</span> <span class="tok-o">=</span> <span class="tok-n">nbins</span><span class="tok-p">,</span> <span class="tok-n">histh</span> <span class="tok-o">=</span> <span class="tok-n">nbins</span><span class="tok-o">/</span><span class="tok-mi">2</span><span class="tok-p">;</span>
+  <span class="tok-n">Mat</span> <span class="tok-n">histImgOrg</span><span class="tok-p">(</span><span class="tok-n">histh</span><span class="tok-p">,</span> <span class="tok-n">histw</span><span class="tok-p">,</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
+  <span class="tok-n">Mat</span> <span class="tok-n">histImgEq</span><span class="tok-p">(</span><span class="tok-n">histh</span><span class="tok-p">,</span> <span class="tok-n">histw</span><span class="tok-p">,</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
+  <span class="tok-k">while</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">){</span>
+    <span class="tok-n">cap</span> <span class="tok-o">&gt;&gt;</span> <span class="tok-n">image0</span><span class="tok-p">;</span>
+    <span class="tok-n">cvtColor</span><span class="tok-p">(</span><span class="tok-n">image0</span><span class="tok-p">,</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">CV_BGR2GRAY</span><span class="tok-p">);</span>
+    <span class="tok-n">equalizeHist</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">dest</span><span class="tok-p">);</span>
+    <span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;histograma original&quot;</span><span class="tok-p">,</span> <span class="tok-n">CV_WINDOW_AUTOSIZE</span> <span class="tok-p">);</span>
+    <span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;histograma equalizado&quot;</span><span class="tok-p">,</span> <span class="tok-n">CV_WINDOW_AUTOSIZE</span> <span class="tok-p">);</span>
+    <span class="tok-n">calcHist</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-p">(),</span> <span class="tok-n">histOrg</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span>
+             <span class="tok-o">&amp;</span><span class="tok-n">nbins</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">histrange</span><span class="tok-p">,</span>
+             <span class="tok-n">uniform</span><span class="tok-p">,</span> <span class="tok-n">acummulate</span><span class="tok-p">);</span>
+    <span class="tok-n">calcHist</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">dest</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-p">(),</span> <span class="tok-n">histEq</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span>
+             <span class="tok-o">&amp;</span><span class="tok-n">nbins</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">histrange</span><span class="tok-p">,</span>
+             <span class="tok-n">uniform</span><span class="tok-p">,</span> <span class="tok-n">acummulate</span><span class="tok-p">);</span>
+    <span class="tok-n">normalize</span><span class="tok-p">(</span><span class="tok-n">histOrg</span><span class="tok-p">,</span> <span class="tok-n">histOrg</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">histImgOrg</span><span class="tok-p">.</span><span class="tok-n">rows</span><span class="tok-p">,</span> <span class="tok-n">NORM_MINMAX</span><span class="tok-p">,</span> <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-p">());</span>
+    <span class="tok-n">normalize</span><span class="tok-p">(</span><span class="tok-n">histEq</span><span class="tok-p">,</span> <span class="tok-n">histEq</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">histImgEq</span><span class="tok-p">.</span><span class="tok-n">rows</span><span class="tok-p">,</span> <span class="tok-n">NORM_MINMAX</span><span class="tok-p">,</span> <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-p">());</span>
+    <span class="tok-n">histImgOrg</span><span class="tok-p">.</span><span class="tok-n">setTo</span><span class="tok-p">(</span><span class="tok-n">Scalar</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">));</span>
+    <span class="tok-n">histImgEq</span><span class="tok-p">.</span><span class="tok-n">setTo</span><span class="tok-p">(</span><span class="tok-n">Scalar</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">));</span>
+    <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">&lt;</span><span class="tok-n">nbins</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">++</span><span class="tok-p">){</span>
+      <span class="tok-n">line</span><span class="tok-p">(</span><span class="tok-n">histImgOrg</span><span class="tok-p">,</span>
+           <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-p">),</span>
+           <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-o">-</span><span class="tok-n">cvRound</span><span class="tok-p">(</span><span class="tok-n">histOrg</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-kt">float</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">))),</span>
+           <span class="tok-n">Scalar</span><span class="tok-p">(</span><span class="tok-mi">255</span><span class="tok-p">),</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">8</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+      <span class="tok-n">line</span><span class="tok-p">(</span><span class="tok-n">histImgEq</span><span class="tok-p">,</span>
+           <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-p">),</span>
+           <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-o">-</span><span class="tok-n">cvRound</span><span class="tok-p">(</span><span class="tok-n">histEq</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-kt">float</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">))),</span>
+           <span class="tok-n">Scalar</span><span class="tok-p">(</span><span class="tok-mi">255</span><span class="tok-p">),</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">8</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+	<span class="tok-p">}</span>
+    <span class="tok-n">histImgOrg</span><span class="tok-p">.</span><span class="tok-n">copyTo</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">(</span><span class="tok-n">Rect</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-n">nbins</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-p">)));</span>
+    <span class="tok-n">histImgEq</span><span class="tok-p">.</span><span class="tok-n">copyTo</span><span class="tok-p">(</span><span class="tok-n">dest</span><span class="tok-p">(</span><span class="tok-n">Rect</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-n">nbins</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-p">)));</span>
+
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;histograma original&quot;</span><span class="tok-p">,</span><span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;histograma equalizado&quot;</span><span class="tok-p">,</span><span class="tok-n">dest</span><span class="tok-p">);</span>
+	<span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">30</span><span class="tok-p">)</span> <span class="tok-o">&gt;=</span> <span class="tok-mi">0</span><span class="tok-p">)</span> <span class="tok-k">break</span><span class="tok-p">;</span>
+  <span class="tok-p">}</span>
+  <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Pode-se ver algumas alterações em relação ao código de referência (inserir link):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code class="cpp language-cpp">  <span class="tok-n">Mat</span> <span class="tok-nf">histImgOrg</span><span class="tok-p">(</span><span class="tok-n">histh</span><span class="tok-p">,</span> <span class="tok-n">histw</span><span class="tok-p">,</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
+  <span class="tok-n">Mat</span> <span class="tok-nf">histImgEq</span><span class="tok-p">(</span><span class="tok-n">histh</span><span class="tok-p">,</span> <span class="tok-n">histw</span><span class="tok-p">,</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>histImgOrg</code> faz referência ao histograma da imagem original, e <code>histImgEq</code>, ao histograma da imagem equalizada. Como as imagens processadas estão na escala de cinza, o tipo de dado mudou de <code>CV8_UC3</code> para <code>CV_8U</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code class="cpp language-cpp"><span class="tok-n">cvtColor</span><span class="tok-p">(</span><span class="tok-n">image0</span><span class="tok-p">,</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">CV_BGR2GRAY</span><span class="tok-p">);</span>
+<span class="tok-n">equalizeHist</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">dest</span><span class="tok-p">);</span>
+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A função <code>cvtColor()</code> converte a imagem capturada de um espaço de cor para outro. Seus parâmetros são:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="bolhas/teste.html">Bolhas</a> - Tarefa implementada para a contagem de objetos em uma cena</p>
+<p>Imagem de Entrada</p>
 </li>
 <li>
-<p><a href="troca-regioes/troca.html">Troca de Regiões</a> - Tarefa implementada para trocar quadrantes de uma imagem</p>
+<p>Imagem de saída</p>
 </li>
 <li>
-<p><a href="histograma/equalizacao.html">Equalização de Histograma</a>  - Tarefa implementada para mostrar imagem de fluxo de video com histograma equalizado</p>
+<p>Código referente à conversão do espaço de cor (na aplicação, do plano RGB para Escala de Cinza)</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>stem:[sqrt(4) = 2]</p>
+<p>A função <code>equalizeHist()</code>, por sua vez, realiza a equalização do histograma de uma imagem na escala de cinza. Seus parâmetros são:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>Imagem-fonte, com canal único de 8 bits</p>
+</li>
+<li>
+<p>Imagem-destino, do mesmo tipo e tamanho que a imagem-fonte</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_resultados_e_considera_es_finais">Resultados e Considerações Finais</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>latexmath:[C = \alpha + \beta Y^{\gamma} + \epsilon</p>
+<p>Nessa aplicação, foram usadas pela primeira vez várias funcionalidades do <em>OpenCV</em>, dentre as quais:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Fluxo de vídeo por meio da utilização da classe <code>VideCapture</code></p>
+</li>
+<li>
+<p>Uso da função <code>cvtColor()</code></p>
+</li>
+<li>
+<p>Uso da função <code>equalizeHist()</code></p>
+</li>
+<li>
+<p>Uso da função <code>CalcHist()</code></p>
+</li>
+<li>
+<p>Uso da função <code>normalize()</code></p>
+</li>
+<li>
+<p>Uso de funcionalidades de desenho, entre elas <code>line()</code></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-09-06 23:55:13 -03
+Last updated 2017-09-06 22:46:36 -03
 </div>
 </div>
 </body>
