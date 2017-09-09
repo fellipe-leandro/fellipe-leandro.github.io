@@ -1,7 +1,7 @@
 [.text-justify]
 = Tarefas PDI
-Fellipe Augusto e Jessika Cristina
-stem: latexmath
+Fellipe Augusto ; Jessika Cristina
+:stem:
 
 Essa página reúne todas as tarefas implementadas  para a disciplina Processamento Digital de Imagens durante  o semestre 2017.2
 
@@ -11,13 +11,8 @@ Tarefas desenvolvidas na primeira unidade do semestre.
 
 * link:bolhas/teste.html[Bolhas] - Tarefa implementada para a contagem de objetos em uma cena
 * link:troca-regioes/troca.html[Troca de Regiões] - Tarefa implementada para trocar quadrantes de uma imagem
-* link:histograma/equalizacao.html[Equalização de Histograma]  - Tarefa implementada para mostrar imagem de fluxo de video com histograma equalizado
+* link:histograma/equalizacao.html[Equalização de Histograma]  - Tarefa implementada para mostrar imagem de fluxo de vídeo com histograma equalizado
+* link:histograma/motion-detect.html[Detecção de movimento] - Tarega implementada para realizar detecção de movimento em um fluxo de vídeo via comparação de histogramas
 
 
-.First equation
-[latexmath]
-++++++++++++++++++++++++++++++++++++++++++++
-\[C = \alpha + \beta Y^{\gamma} + \epsilon\]
-++++++++++++++++++++++++++++++++++++++++++++
 
-Water (stem:[H_2O]) is a critical component.

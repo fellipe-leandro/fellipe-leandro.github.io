@@ -1,0 +1,161 @@
+= Detecção de movimentos
+Fellipe Augusto;Jessika Cristina
+:source-highlighter: pygments
+
+== Definição do problema
+Por meio de comparação de histogramas, deve-se implmentar uma aplicação que identifique quando ocorre um movimento na cena, ativando algum tipo de alarme.
+
+== Solução proposta
+
+.motion.cpp
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+using namespace std;
+using namespace cv;
+
+
+int main(int argc, char** argv){
+  Mat image0,image,dest;
+  int width, height;
+  VideoCapture cap;
+  vector<Mat> planes;
+  Mat histOrg, histEq;
+  int nbins = 64;
+  float range[] = {0, 256};
+  float histAvg=0;
+  float histAvgOld=0;
+  float deltaHist=0;
+  float calibHist[500];
+  int contCalib=0;
+  int flagCalib=0;
+  float CalibAvgHist=0;
+  const float *histrange = { range };
+  bool uniform = true;
+  bool acummulate = false;
+
+  cap.open(0);
+
+  if(!cap.isOpened()){
+    cout << "cameras indisponiveis";
+    return -1;
+  }
+
+  width  = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+  height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+  cout << "largura = " << width << endl;
+  cout << "altura  = " << height << endl;
+
+  int histw = nbins, histh = nbins;
+  Mat histImgOrg(histh, histw, CV_8U);
+  Mat histImgEq(histh, histw, CV_8U);
+  //Mat histImgB(histh, histw, CV_8UC3, Scalar(0,0,0));
+
+  while(1){
+    cap >> image0;
+    cvtColor(image0,image,CV_BGR2GRAY);
+    equalizeHist(image,dest);
+    calcHist(&image, 1, 0, Mat(), histOrg, 1,
+             &nbins, &histrange,
+             uniform, acummulate);
+    calcHist(&dest, 1, 0, Mat(), histEq, 1,
+             &nbins, &histrange,
+             uniform, acummulate);
+    normalize(histOrg, histOrg, 0, histImgOrg.rows, NORM_MINMAX, -1, Mat());
+    normalize(histEq, histEq, 0, histImgEq.rows, NORM_MINMAX, -1, Mat());
+    histImgOrg.setTo(Scalar(0));
+    histImgEq.setTo(Scalar(0));
+    histAvg=0;
+    for(int i=0; i<nbins; i++){
+      line(histImgOrg,
+           Point(i, histh),
+           Point(i, histh-cvRound(histOrg.at<float>(i))),
+           Scalar(255), 1, 8, 0);
+
+      line(histImgEq,
+           Point(i, histh),
+           Point(i, histh-cvRound(histEq.at<float>(i))),
+           Scalar(255), 1, 8, 0);
+
+      histAvg = histAvg+i*histOrg.at<float>(i);
+
+    }
+    histAvg=histAvg/(nbins*(nbins-1)/2);
+    deltaHist = histAvg-histAvgOld;
+    deltaHist =sqrt(deltaHist*deltaHist);
+    if(contCalib<500){
+    calibHist[contCalib]=deltaHist*deltaHist;
+    contCalib++;
+    }
+    else if(contCalib==500 && flagCalib==0){
+        for(int i=0;i<contCalib;i++){
+            CalibAvgHist=CalibAvgHist+calibHist[i];
+        }
+        CalibAvgHist=CalibAvgHist/contCalib;
+        CalibAvgHist=sqrt(CalibAvgHist);
+        cout<<"Media da variacao do histograma para esse cenario:"<<CalibAvgHist<<endl;
+        flagCalib=1;
+    }
+
+
+
+//    cout<<"Media do histograma: "<<histAvg<<endl;
+//    cout<<"Variação do histograma:"<<deltaHist<<endl;
+
+    //Tratamento de decisão se houve movimento:
+    if(flagCalib==1 && deltaHist>CalibAvgHist){
+        cout<<"Movimento detectado"<<endl;
+
+    }
+    histAvgOld=histAvg;
+    namedWindow("histograma original", CV_WINDOW_AUTOSIZE );
+    imshow("histograma original",histImgOrg);
+    namedWindow("histograma equalizado", CV_WINDOW_AUTOSIZE );
+    imshow("histograma equalizado",histImgEq);
+    namedWindow("Stream Original", CV_WINDOW_AUTOSIZE );
+    imshow("Stream Original",image);
+    namedWindow("Stream Equalizado",CV_WINDOW_AUTOSIZE);
+    imshow("Stream Equalizado",dest);
+    if(waitKey(30) >= 0) break;
+  }
+  return 0;
+}
+----
+Ao invés da simples comparação entre histogramas, buscou-se desenvolver cálculos de natureza mais estatísticas.
+[source,cpp]
+----
+histAvg = histAvg+i*histOrg.at<float>(i);
+
+    }
+    histAvg=histAvg/(nbins*(nbins-1)/2);
+    deltaHist = histAvg-histAvgOld;
+    deltaHist =sqrt(deltaHist*deltaHist);
+----
+Nesse trecho, observa-se a implementação de uma média ponderada do histograma, bem como o cálculo do módulo da diferença entre a média do histograma atual e a média do histograma da cena anterior (salvo na variável `deltaHist`).Se houve mudança na média, quer dizer que houve algun deslocamento no histograma, o que indica alteração na cena. O próximo passo é definir quando essa alteração representa um movimento, e não uma simples alteração de luminosidade, por exemplo.
+
+[source,cpp]
+----
+ if(contCalib<500){
+    calibHist[contCalib]=deltaHist*deltaHist;
+    contCalib++;
+    }
+    else if(contCalib==500 && flagCalib==0){
+        for(int i=0;i<contCalib;i++){
+            CalibAvgHist=CalibAvgHist+calibHist[i];
+        }
+        CalibAvgHist=CalibAvgHist/contCalib;
+        CalibAvgHist=sqrt(CalibAvgHist);
+        cout<<"Media da variacao do histograma para esse cenario:"<<CalibAvgHist<<endl;
+        flagCalib=1;
+    }
+----
+O limiar estabelecido pela aplicação para ativar o alarme de movimento foi definido por meio de um processo denominado "calibração", no qual se tomam 500 amostras do fluxo de video em sua condição padrão (sem movimento) e as variações naturais que ocorrem em seu histograma. Dessa forma, se a variação entre cenas após essa calibração for maior que o limiar calculado, define-se que houve movimento.
+
+A variável `flagCalib` serve como um sinal de controle para que haja detecção de movimento apenas após o processo de calibração.
+
+== Resultados e Considerações Finais
+Na aplicação, foram testados tanto o histograma original quanto o histograma equalizado para comparação, sendo que o original gerou melhor resposta. O histograma equalizado se mostrou sensível a variações de luminosidade, fato que gerava "falsos positivos", ou seja, alarmes de movimento quando havia na verdade apenas mudança de luminosidade na cena.
+
