@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
 <meta name="author" content="Fellipe Augusto, Jessika Cristina">
-<title>Equalização de Histogramas</title>
+<title>Laplaciano do Gaussiano</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -493,7 +493,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Equalização de Histogramas</h1>
+<h1>Laplaciano do Gaussiano</h1>
 <div class="details">
 <span id="author" class="author">Fellipe Augusto</span><br>
 <span id="author2" class="author">Jessika Cristina</span><br>
@@ -504,7 +504,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_definição_do_problema">Definição do problema</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A aplicação a ser desenvolvida deve realizar a EQUALIZAÇÃO do histograma de imagens obtidas por meio de um fluxo de vídeo antes de exibi-las.</p>
+<p>Deve-se implementar um filtro que realize o laplaciano da gaussiana de  imagens capturadas em um fluxo de vídeo.</p>
 </div>
 </div>
 </div>
@@ -512,169 +512,207 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_solução_proposta">Solução proposta</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Primeiro, definiu-se que as imagens obtidas do fluxo de vídeo seriam processadas na escala de cinza, e não nos três canais RGB. Baseando-se no exemplo (<a href="http://agostinhobritojr.github.io/tutoriais/pdi/#<em>manipula%C3%A7%C3%A3o_de_histogramas">Tutorial - PDI</a>) disponibilizado pelo professor, fez-se uso de função do _OpenCV</em> que realiza o cálculo da equalização.</p>
+<p>Baseando-se no programa disponibilizado em
+<a href="http://agostinhobritojr.github.io/tutoriais/pdi/#_exerc%C3%ADcios_4">Tutorial-PDI</a>, foi implementada mais uma funcionalidade, a de implementar o laplaciano do gaussiano. O kernel desse filtro foi obtido em <a href="http://www2.ic.uff.br/~aconci/G-LoG.PDF">Filtro Gaussiano - UFF</a>.</p>
 </div>
 <div class="listingblock">
-<div class="title">equalize.cpp</div>
+<div class="title">lapgauss.cpp</div>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="cpp"><span class="tok-cp">#include &lt;iostream&gt;</span>
 <span class="tok-cp">#include &lt;opencv2/opencv.hpp&gt;</span>
 
-<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">std</span><span class="tok-p">;</span>
 <span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">cv</span><span class="tok-p">;</span>
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">std</span><span class="tok-p">;</span>
 
-
-<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argc</span><span class="tok-p">,</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">){</span>
-  <span class="tok-n">Mat</span> <span class="tok-n">image0</span><span class="tok-p">,</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">dest</span><span class="tok-p">;</span>
-  <span class="tok-kt">int</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-n">height</span><span class="tok-p">;</span>
-  <span class="tok-n">VideoCapture</span> <span class="tok-n">cap</span><span class="tok-p">;</span>
-  <span class="tok-n">vector</span><span class="tok-o">&lt;</span><span class="tok-n">Mat</span><span class="tok-o">&gt;</span> <span class="tok-n">planes</span><span class="tok-p">;</span>
-  <span class="tok-n">Mat</span> <span class="tok-n">histOrg</span><span class="tok-p">,</span> <span class="tok-n">histEq</span><span class="tok-p">;</span>
-  <span class="tok-kt">int</span> <span class="tok-n">nbins</span> <span class="tok-o">=</span> <span class="tok-mi">64</span><span class="tok-p">;</span>
-  <span class="tok-kt">float</span> <span class="tok-n">range</span><span class="tok-p">[]</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">256</span><span class="tok-p">};</span>
-  <span class="tok-k">const</span> <span class="tok-kt">float</span> <span class="tok-o">*</span><span class="tok-n">histrange</span> <span class="tok-o">=</span> <span class="tok-p">{</span> <span class="tok-n">range</span> <span class="tok-p">};</span>
-  <span class="tok-kt">bool</span> <span class="tok-n">uniform</span> <span class="tok-o">=</span> <span class="tok-nb">true</span><span class="tok-p">;</span>
-  <span class="tok-kt">bool</span> <span class="tok-n">acummulate</span> <span class="tok-o">=</span> <span class="tok-nb">false</span><span class="tok-p">;</span>
-
-  <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">open</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">);</span>
-
-  <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">isOpened</span><span class="tok-p">()){</span>
-    <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;cameras indisponiveis&quot;</span><span class="tok-p">;</span>
-    <span class="tok-k">return</span> <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">;</span>
+<span class="tok-kt">void</span> <span class="tok-nf">printmask</span><span class="tok-p">(</span><span class="tok-n">Mat</span> <span class="tok-o">&amp;</span><span class="tok-n">m</span><span class="tok-p">){</span>
+  <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">&lt;</span><span class="tok-n">m</span><span class="tok-p">.</span><span class="tok-n">size</span><span class="tok-p">().</span><span class="tok-n">height</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">++</span><span class="tok-p">){</span>
+    <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">j</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">j</span><span class="tok-o">&lt;</span><span class="tok-n">m</span><span class="tok-p">.</span><span class="tok-n">size</span><span class="tok-p">().</span><span class="tok-n">width</span><span class="tok-p">;</span> <span class="tok-n">j</span><span class="tok-o">++</span><span class="tok-p">){</span>
+      <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">m</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-kt">float</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span><span class="tok-n">j</span><span class="tok-p">)</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;,&quot;</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
+    <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span><span class="tok-p">;</span>
   <span class="tok-p">}</span>
+<span class="tok-p">}</span>
 
-  <span class="tok-n">width</span>  <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_WIDTH</span><span class="tok-p">);</span>
-  <span class="tok-n">height</span> <span class="tok-o">=</span> <span class="tok-n">cap</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_HEIGHT</span><span class="tok-p">);</span>
+<span class="tok-kt">void</span> <span class="tok-nf">menu</span><span class="tok-p">(){</span>
+  <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">pressione a tecla para ativar o filtro: </span><span class="tok-se">\n</span><span class="tok-s">&quot;</span>
+    <span class="tok-s">&quot;a - calcular modulo</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span>
+    <span class="tok-s">&quot;m - media</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span>
+    <span class="tok-s">&quot;g - gauss</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span>
+    <span class="tok-s">&quot;v - vertical</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span>
+    <span class="tok-s">&quot;h - horizontal</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span>
+    <span class="tok-s">&quot;l - laplaciano</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span>
+    <span class="tok-s">&quot;e - LoG</span><span class="tok-se">\n</span><span class="tok-s"> &quot;</span>
+    <span class="tok-s">&quot;esc - sair</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;</span>
+<span class="tok-p">}</span>
 
-  <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;largura = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span><span class="tok-p">;</span>
-  <span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;altura  = &quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">height</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">endl</span><span class="tok-p">;</span>
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">argvc</span><span class="tok-p">,</span> <span class="tok-kt">char</span><span class="tok-o">**</span> <span class="tok-n">argv</span><span class="tok-p">){</span>
+  <span class="tok-n">VideoCapture</span> <span class="tok-n">video</span><span class="tok-p">;</span>
+  <span class="tok-kt">float</span> <span class="tok-n">media</span><span class="tok-p">[]</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">,</span>
+                   <span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">,</span>
+                   <span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">};</span>
+  <span class="tok-kt">float</span> <span class="tok-n">gauss</span><span class="tok-p">[]</span> <span class="tok-o">=</span> <span class="tok-p">{</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">,</span>
+                   <span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-mi">4</span><span class="tok-p">,</span><span class="tok-mi">2</span><span class="tok-p">,</span>
+                   <span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">};</span>
+  <span class="tok-kt">float</span> <span class="tok-n">horizontal</span><span class="tok-p">[]</span><span class="tok-o">=</span><span class="tok-p">{</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">,</span>
+                      <span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">2</span><span class="tok-p">,</span>
+                      <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">};</span>
+  <span class="tok-kt">float</span> <span class="tok-n">vertical</span><span class="tok-p">[]</span><span class="tok-o">=</span><span class="tok-p">{</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span>
+                    <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span>
+                    <span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">};</span>
+  <span class="tok-kt">float</span> <span class="tok-n">laplacian</span><span class="tok-p">[]</span><span class="tok-o">=</span><span class="tok-p">{</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span>
+                     <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">4</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span>
+                     <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">};</span>
+  <span class="tok-kt">float</span> <span class="tok-n">LoG</span><span class="tok-p">[]</span><span class="tok-o">=</span><span class="tok-p">{</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span>
+               <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span>
+               <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-mi">16</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span>
+               <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span>
+               <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">0</span> <span class="tok-p">};</span>
 
-  <span class="tok-kt">int</span> <span class="tok-n">histw</span> <span class="tok-o">=</span> <span class="tok-n">nbins</span><span class="tok-p">,</span> <span class="tok-n">histh</span> <span class="tok-o">=</span> <span class="tok-n">nbins</span><span class="tok-o">/</span><span class="tok-mi">2</span><span class="tok-p">;</span>
-  <span class="tok-n">Mat</span> <span class="tok-n">histImgOrg</span><span class="tok-p">(</span><span class="tok-n">histh</span><span class="tok-p">,</span> <span class="tok-n">histw</span><span class="tok-p">,</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
-  <span class="tok-n">Mat</span> <span class="tok-n">histImgEq</span><span class="tok-p">(</span><span class="tok-n">histh</span><span class="tok-p">,</span> <span class="tok-n">histw</span><span class="tok-p">,</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
-  <span class="tok-k">while</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">){</span>
-    <span class="tok-n">cap</span> <span class="tok-o">&gt;&gt;</span> <span class="tok-n">image0</span><span class="tok-p">;</span>
-    <span class="tok-n">cvtColor</span><span class="tok-p">(</span><span class="tok-n">image0</span><span class="tok-p">,</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">CV_BGR2GRAY</span><span class="tok-p">);</span>
-    <span class="tok-n">equalizeHist</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">dest</span><span class="tok-p">);</span>
-    <span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;histograma original&quot;</span><span class="tok-p">,</span> <span class="tok-n">CV_WINDOW_AUTOSIZE</span> <span class="tok-p">);</span>
-    <span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;histograma equalizado&quot;</span><span class="tok-p">,</span> <span class="tok-n">CV_WINDOW_AUTOSIZE</span> <span class="tok-p">);</span>
-    <span class="tok-n">calcHist</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">image</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-p">(),</span> <span class="tok-n">histOrg</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span>
-             <span class="tok-o">&amp;</span><span class="tok-n">nbins</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">histrange</span><span class="tok-p">,</span>
-             <span class="tok-n">uniform</span><span class="tok-p">,</span> <span class="tok-n">acummulate</span><span class="tok-p">);</span>
-    <span class="tok-n">calcHist</span><span class="tok-p">(</span><span class="tok-o">&amp;</span><span class="tok-n">dest</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-p">(),</span> <span class="tok-n">histEq</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">,</span>
-             <span class="tok-o">&amp;</span><span class="tok-n">nbins</span><span class="tok-p">,</span> <span class="tok-o">&amp;</span><span class="tok-n">histrange</span><span class="tok-p">,</span>
-             <span class="tok-n">uniform</span><span class="tok-p">,</span> <span class="tok-n">acummulate</span><span class="tok-p">);</span>
-    <span class="tok-n">normalize</span><span class="tok-p">(</span><span class="tok-n">histOrg</span><span class="tok-p">,</span> <span class="tok-n">histOrg</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">histImgOrg</span><span class="tok-p">.</span><span class="tok-n">rows</span><span class="tok-p">,</span> <span class="tok-n">NORM_MINMAX</span><span class="tok-p">,</span> <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-p">());</span>
-    <span class="tok-n">normalize</span><span class="tok-p">(</span><span class="tok-n">histEq</span><span class="tok-p">,</span> <span class="tok-n">histEq</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-n">histImgEq</span><span class="tok-p">.</span><span class="tok-n">rows</span><span class="tok-p">,</span> <span class="tok-n">NORM_MINMAX</span><span class="tok-p">,</span> <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-p">());</span>
-    <span class="tok-n">histImgOrg</span><span class="tok-p">.</span><span class="tok-n">setTo</span><span class="tok-p">(</span><span class="tok-n">Scalar</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">));</span>
-    <span class="tok-n">histImgEq</span><span class="tok-p">.</span><span class="tok-n">setTo</span><span class="tok-p">(</span><span class="tok-n">Scalar</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">));</span>
-    <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">i</span><span class="tok-o">=</span><span class="tok-mi">0</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">&lt;</span><span class="tok-n">nbins</span><span class="tok-p">;</span> <span class="tok-n">i</span><span class="tok-o">++</span><span class="tok-p">){</span>
-      <span class="tok-n">line</span><span class="tok-p">(</span><span class="tok-n">histImgOrg</span><span class="tok-p">,</span>
-           <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-p">),</span>
-           <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-o">-</span><span class="tok-n">cvRound</span><span class="tok-p">(</span><span class="tok-n">histOrg</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-kt">float</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">))),</span>
-           <span class="tok-n">Scalar</span><span class="tok-p">(</span><span class="tok-mi">255</span><span class="tok-p">),</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">8</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
-      <span class="tok-n">line</span><span class="tok-p">(</span><span class="tok-n">histImgEq</span><span class="tok-p">,</span>
-           <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-p">),</span>
-           <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-o">-</span><span class="tok-n">cvRound</span><span class="tok-p">(</span><span class="tok-n">histEq</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-kt">float</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">i</span><span class="tok-p">))),</span>
-           <span class="tok-n">Scalar</span><span class="tok-p">(</span><span class="tok-mi">255</span><span class="tok-p">),</span> <span class="tok-mi">1</span><span class="tok-p">,</span> <span class="tok-mi">8</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
-	<span class="tok-p">}</span>
-    <span class="tok-n">histImgOrg</span><span class="tok-p">.</span><span class="tok-n">copyTo</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">(</span><span class="tok-n">Rect</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-n">nbins</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-p">)));</span>
-    <span class="tok-n">histImgEq</span><span class="tok-p">.</span><span class="tok-n">copyTo</span><span class="tok-p">(</span><span class="tok-n">dest</span><span class="tok-p">(</span><span class="tok-n">Rect</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">,</span> <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-n">nbins</span><span class="tok-p">,</span> <span class="tok-n">histh</span><span class="tok-p">)));</span>
+  <span class="tok-n">Mat</span> <span class="tok-n">cap</span><span class="tok-p">,</span> <span class="tok-n">frame</span><span class="tok-p">,</span> <span class="tok-n">frame32f</span><span class="tok-p">,</span> <span class="tok-n">frameFiltered</span><span class="tok-p">;</span>
+  <span class="tok-n">Mat</span> <span class="tok-n">mask</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span><span class="tok-mi">3</span><span class="tok-p">,</span><span class="tok-n">CV_32F</span><span class="tok-p">),</span> <span class="tok-n">mask1</span><span class="tok-p">;</span>
+  <span class="tok-n">Mat</span> <span class="tok-n">result</span><span class="tok-p">,</span> <span class="tok-n">result1</span><span class="tok-p">;</span>
+  <span class="tok-c1">//Mat auxMask(5,5,CV_32F);</span>
+  <span class="tok-kt">double</span> <span class="tok-n">width</span><span class="tok-p">,</span> <span class="tok-n">height</span><span class="tok-p">,</span> <span class="tok-n">min</span><span class="tok-p">,</span> <span class="tok-n">max</span><span class="tok-p">;</span>
+  <span class="tok-kt">int</span> <span class="tok-n">absolut</span><span class="tok-p">;</span>
+  <span class="tok-kt">char</span> <span class="tok-n">key</span><span class="tok-p">;</span>
 
-    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;histograma original&quot;</span><span class="tok-p">,</span><span class="tok-n">image</span><span class="tok-p">);</span>
-    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;histograma equalizado&quot;</span><span class="tok-p">,</span><span class="tok-n">dest</span><span class="tok-p">);</span>
-	<span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">30</span><span class="tok-p">)</span> <span class="tok-o">&gt;=</span> <span class="tok-mi">0</span><span class="tok-p">)</span> <span class="tok-k">break</span><span class="tok-p">;</span>
+  <span class="tok-n">video</span><span class="tok-p">.</span><span class="tok-n">open</span><span class="tok-p">(</span><span class="tok-mi">0</span><span class="tok-p">);</span>
+  <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">video</span><span class="tok-p">.</span><span class="tok-n">isOpened</span><span class="tok-p">())</span>
+    <span class="tok-k">return</span> <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">;</span>
+  <span class="tok-n">width</span><span class="tok-o">=</span><span class="tok-n">video</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_WIDTH</span><span class="tok-p">);</span>
+  <span class="tok-n">height</span><span class="tok-o">=</span><span class="tok-n">video</span><span class="tok-p">.</span><span class="tok-n">get</span><span class="tok-p">(</span><span class="tok-n">CV_CAP_PROP_FRAME_HEIGHT</span><span class="tok-p">);</span>
+  <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;largura=&quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">width</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;;</span>
+  <span class="tok-n">std</span><span class="tok-o">::</span><span class="tok-n">cout</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;altura =&quot;</span> <span class="tok-o">&lt;&lt;</span> <span class="tok-n">height</span><span class="tok-o">&lt;&lt;</span> <span class="tok-s">&quot;</span><span class="tok-se">\n</span><span class="tok-s">&quot;</span><span class="tok-p">;;</span>
+
+  <span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;filtroespacial&quot;</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">);</span>
+
+  <span class="tok-n">mask</span> <span class="tok-o">=</span> <span class="tok-n">Mat</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">,</span> <span class="tok-n">media</span><span class="tok-p">);</span>
+
+  <span class="tok-n">scaleAdd</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-o">/</span><span class="tok-mf">9.0</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-o">::</span><span class="tok-n">zeros</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span><span class="tok-mi">3</span><span class="tok-p">,</span><span class="tok-n">CV_32F</span><span class="tok-p">),</span> <span class="tok-n">mask1</span><span class="tok-p">);</span>
+  <span class="tok-n">swap</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">,</span> <span class="tok-n">mask1</span><span class="tok-p">);</span>
+  <span class="tok-n">absolut</span><span class="tok-o">=</span><span class="tok-mi">1</span><span class="tok-p">;</span> <span class="tok-c1">// calcs abs of the image</span>
+
+  <span class="tok-n">menu</span><span class="tok-p">();</span>
+  <span class="tok-k">for</span><span class="tok-p">(;;){</span>
+    <span class="tok-n">video</span> <span class="tok-o">&gt;&gt;</span> <span class="tok-n">cap</span><span class="tok-p">;</span>
+    <span class="tok-n">cvtColor</span><span class="tok-p">(</span><span class="tok-n">cap</span><span class="tok-p">,</span> <span class="tok-n">frame</span><span class="tok-p">,</span> <span class="tok-n">CV_BGR2GRAY</span><span class="tok-p">);</span>
+    <span class="tok-n">flip</span><span class="tok-p">(</span><span class="tok-n">frame</span><span class="tok-p">,</span> <span class="tok-n">frame</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-p">);</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;original&quot;</span><span class="tok-p">,</span> <span class="tok-n">frame</span><span class="tok-p">);</span>
+    <span class="tok-n">frame</span><span class="tok-p">.</span><span class="tok-n">convertTo</span><span class="tok-p">(</span><span class="tok-n">frame32f</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">);</span>
+    <span class="tok-n">filter2D</span><span class="tok-p">(</span><span class="tok-n">frame32f</span><span class="tok-p">,</span> <span class="tok-n">frameFiltered</span><span class="tok-p">,</span> <span class="tok-n">frame32f</span><span class="tok-p">.</span><span class="tok-n">depth</span><span class="tok-p">(),</span> <span class="tok-n">mask</span><span class="tok-p">,</span> <span class="tok-n">Point</span><span class="tok-p">(</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">1</span><span class="tok-p">),</span> <span class="tok-mi">0</span><span class="tok-p">);</span>
+    <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-n">absolut</span><span class="tok-p">){</span>
+      <span class="tok-n">frameFiltered</span><span class="tok-o">=</span><span class="tok-n">abs</span><span class="tok-p">(</span><span class="tok-n">frameFiltered</span><span class="tok-p">);</span>
+    <span class="tok-p">}</span>
+    <span class="tok-n">frameFiltered</span><span class="tok-p">.</span><span class="tok-n">convertTo</span><span class="tok-p">(</span><span class="tok-n">result</span><span class="tok-p">,</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;filtroespacial&quot;</span><span class="tok-p">,</span> <span class="tok-n">result</span><span class="tok-p">);</span>
+    <span class="tok-n">key</span> <span class="tok-o">=</span> <span class="tok-p">(</span><span class="tok-kt">char</span><span class="tok-p">)</span> <span class="tok-n">waitKey</span><span class="tok-p">(</span><span class="tok-mi">10</span><span class="tok-p">);</span>
+    <span class="tok-k">if</span><span class="tok-p">(</span> <span class="tok-n">key</span> <span class="tok-o">==</span> <span class="tok-mi">27</span> <span class="tok-p">)</span> <span class="tok-k">break</span><span class="tok-p">;</span> <span class="tok-c1">// esc pressed!</span>
+    <span class="tok-k">switch</span><span class="tok-p">(</span><span class="tok-n">key</span><span class="tok-p">){</span>
+    <span class="tok-k">case</span> <span class="tok-sc">&#39;a&#39;</span><span class="tok-o">:</span>
+      <span class="tok-n">menu</span><span class="tok-p">();</span>
+      <span class="tok-n">absolut</span><span class="tok-o">=!</span><span class="tok-n">absolut</span><span class="tok-p">;</span>
+      <span class="tok-k">break</span><span class="tok-p">;</span>
+    <span class="tok-k">case</span> <span class="tok-sc">&#39;m&#39;</span><span class="tok-o">:</span>
+      <span class="tok-n">menu</span><span class="tok-p">();</span>
+      <span class="tok-n">mask</span> <span class="tok-o">=</span> <span class="tok-n">Mat</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">,</span> <span class="tok-n">media</span><span class="tok-p">);</span>
+      <span class="tok-n">scaleAdd</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-o">/</span><span class="tok-mf">9.0</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-o">::</span><span class="tok-n">zeros</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span><span class="tok-mi">3</span><span class="tok-p">,</span><span class="tok-n">CV_32F</span><span class="tok-p">),</span> <span class="tok-n">mask1</span><span class="tok-p">);</span>
+      <span class="tok-n">mask</span> <span class="tok-o">=</span> <span class="tok-n">mask1</span><span class="tok-p">;</span>
+      <span class="tok-n">printmask</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">);</span>
+      <span class="tok-k">break</span><span class="tok-p">;</span>
+    <span class="tok-k">case</span> <span class="tok-sc">&#39;g&#39;</span><span class="tok-o">:</span>
+      <span class="tok-n">menu</span><span class="tok-p">();</span>
+      <span class="tok-n">mask</span> <span class="tok-o">=</span> <span class="tok-n">Mat</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">,</span> <span class="tok-n">gauss</span><span class="tok-p">);</span>
+      <span class="tok-n">scaleAdd</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">,</span> <span class="tok-mi">1</span><span class="tok-o">/</span><span class="tok-mf">16.0</span><span class="tok-p">,</span> <span class="tok-n">Mat</span><span class="tok-o">::</span><span class="tok-n">zeros</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span><span class="tok-mi">3</span><span class="tok-p">,</span><span class="tok-n">CV_32F</span><span class="tok-p">),</span> <span class="tok-n">mask1</span><span class="tok-p">);</span>
+      <span class="tok-n">mask</span> <span class="tok-o">=</span> <span class="tok-n">mask1</span><span class="tok-p">;</span>
+      <span class="tok-n">printmask</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">);</span>
+      <span class="tok-k">break</span><span class="tok-p">;</span>
+    <span class="tok-k">case</span> <span class="tok-sc">&#39;h&#39;</span><span class="tok-o">:</span>
+      <span class="tok-n">menu</span><span class="tok-p">();</span>
+      <span class="tok-n">mask</span> <span class="tok-o">=</span> <span class="tok-n">Mat</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">,</span> <span class="tok-n">horizontal</span><span class="tok-p">);</span>
+      <span class="tok-n">printmask</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">);</span>
+      <span class="tok-k">break</span><span class="tok-p">;</span>
+    <span class="tok-k">case</span> <span class="tok-sc">&#39;v&#39;</span><span class="tok-o">:</span>
+      <span class="tok-n">menu</span><span class="tok-p">();</span>
+      <span class="tok-n">mask</span> <span class="tok-o">=</span> <span class="tok-n">Mat</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">,</span> <span class="tok-n">vertical</span><span class="tok-p">);</span>
+      <span class="tok-n">printmask</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">);</span>
+      <span class="tok-k">break</span><span class="tok-p">;</span>
+    <span class="tok-k">case</span> <span class="tok-sc">&#39;l&#39;</span><span class="tok-o">:</span>
+      <span class="tok-n">menu</span><span class="tok-p">();</span>
+      <span class="tok-n">mask</span> <span class="tok-o">=</span> <span class="tok-n">Mat</span><span class="tok-p">(</span><span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-mi">3</span><span class="tok-p">,</span> <span class="tok-n">CV_32F</span><span class="tok-p">,</span> <span class="tok-n">laplacian</span><span class="tok-p">);</span>
+      <span class="tok-n">printmask</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">);</span>
+      <span class="tok-k">break</span><span class="tok-p">;</span>
+    <span class="tok-k">case</span> <span class="tok-sc">&#39;e&#39;</span><span class="tok-o">:</span>
+        <span class="tok-n">menu</span><span class="tok-p">();</span>
+        <span class="tok-n">mask</span><span class="tok-o">=</span><span class="tok-n">Mat</span><span class="tok-p">(</span><span class="tok-mi">5</span><span class="tok-p">,</span><span class="tok-mi">5</span><span class="tok-p">,</span><span class="tok-n">CV_32F</span><span class="tok-p">,</span><span class="tok-n">LoG</span><span class="tok-p">);</span>
+        <span class="tok-n">printmask</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">);</span>
+        <span class="tok-k">break</span><span class="tok-p">;</span>
+    <span class="tok-k">default</span><span class="tok-o">:</span>
+      <span class="tok-k">break</span><span class="tok-p">;</span>
+    <span class="tok-p">}</span>
   <span class="tok-p">}</span>
   <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
 <span class="tok-p">}</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Pode-se ver algumas alterações em relação ao código de referência (inserir link):</p>
+<p>As linhas</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="cpp">  <span class="tok-n">Mat</span> <span class="tok-nf">histImgOrg</span><span class="tok-p">(</span><span class="tok-n">histh</span><span class="tok-p">,</span> <span class="tok-n">histw</span><span class="tok-p">,</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span>
-  <span class="tok-n">Mat</span> <span class="tok-nf">histImgEq</span><span class="tok-p">(</span><span class="tok-n">histh</span><span class="tok-p">,</span> <span class="tok-n">histw</span><span class="tok-p">,</span> <span class="tok-n">CV_8U</span><span class="tok-p">);</span></code></pre>
+<pre class="pygments highlight"><code data-lang="cpp">  <span class="tok-kt">float</span> <span class="tok-n">LoG</span><span class="tok-p">[]</span><span class="tok-o">=</span><span class="tok-p">{</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span>
+               <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span>
+               <span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-mi">16</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span>
+               <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">2</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span>
+               <span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-o">-</span><span class="tok-mi">1</span><span class="tok-p">,</span><span class="tok-mi">0</span><span class="tok-p">,</span><span class="tok-mi">0</span> <span class="tok-p">};</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p><code>histImgOrg</code> faz referência ao histograma da imagem original, e <code>histImgEq</code>, ao histograma da imagem equalizada. Como as imagens processadas estão na escala de cinza, o tipo de dado mudou de <code>CV8_UC3</code> para <code>CV_8U</code>.</p>
+<p>Definem o kernel do filtro Laplaciano do Gaussiano (LoG). Esse filtro tem como objetivo realizar a eliminação de ruído gaussiano e detectar bordas.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="cpp"><span class="tok-n">cvtColor</span><span class="tok-p">(</span><span class="tok-n">image0</span><span class="tok-p">,</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">CV_BGR2GRAY</span><span class="tok-p">);</span>
-<span class="tok-n">equalizeHist</span><span class="tok-p">(</span><span class="tok-n">image</span><span class="tok-p">,</span><span class="tok-n">dest</span><span class="tok-p">);</span></code></pre>
+<pre class="pygments highlight"><code data-lang="cpp">    <span class="tok-k">case</span> <span class="tok-sc">&#39;e&#39;</span><span class="tok-o">:</span>
+        <span class="tok-n">menu</span><span class="tok-p">();</span>
+        <span class="tok-n">mask</span><span class="tok-o">=</span><span class="tok-n">Mat</span><span class="tok-p">(</span><span class="tok-mi">5</span><span class="tok-p">,</span><span class="tok-mi">5</span><span class="tok-p">,</span><span class="tok-n">CV_32F</span><span class="tok-p">,</span><span class="tok-n">LoG</span><span class="tok-p">);</span>
+        <span class="tok-n">printmask</span><span class="tok-p">(</span><span class="tok-n">mask</span><span class="tok-p">);</span>
+        <span class="tok-k">break</span><span class="tok-p">;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>A função <code>cvtColor()</code> converte a imagem capturada de um espaço de cor para outro. Seus parâmetros são:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Imagem de Entrada</p>
-</li>
-<li>
-<p>Imagem de saída</p>
-</li>
-<li>
-<p>Código referente à conversão do espaço de cor (na aplicação, do plano RGB para Escala de Cinza)</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>A função <code>equalizeHist()</code>, por sua vez, realiza a equalização do histograma de uma imagem na escala de cinza. Seus parâmetros são:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Imagem-fonte, com canal único de 8 bits</p>
-</li>
-<li>
-<p>Imagem-destino, do mesmo tipo e tamanho que a imagem-fonte</p>
-</li>
-</ul>
+<p>Para selecionar esse filtro, o usuário deve digitar a tecla 'e', e o kernel LoG será passado como parâmetro para a função <code>filter2d()</code></p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_resultados_e_considerações_finais">Resultados e Considerações Finais</h2>
+<h2 id="_resultados_e_considerações_finais">Resultados e considerações Finais</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>O resultado do processo de equalização consiste em uma uniformização nos níveis de cinza da imagem, gerando uma consequente melhora no contraste da imagem.
-.Comparativo entre histograma original e histograma equalizado para uma certa imagem do fluxo de vídeo
-image::../imgs/hist.png[]
-Nessa aplicação, foram usadas pela primeira vez várias funcionalidades do <em>OpenCV</em>, dentre as quais:</p>
+<p>A seguir são feitas comparações com os resultados dos Filtros Gaussiano, Laplaciano e Laplaciano do Gaussiano.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Fluxo de vídeo por meio da utilização da classe <code>VideCapture</code></p>
-</li>
-<li>
-<p>Uso da função <code>cvtColor()</code></p>
-</li>
-<li>
-<p>Uso da função <code>equalizeHist()</code></p>
-</li>
-<li>
-<p>Uso da função <code>CalcHist()</code></p>
-</li>
-<li>
-<p>Uso da função <code>normalize()</code></p>
-</li>
-<li>
-<p>Uso de funcionalidades de desenho, entre elas <code>line()</code></p>
-</li>
-</ul>
+<div class="imageblock">
+<div class="content">
+<img src="../imgs/gauss.png" alt="gauss">
+</div>
+<div class="title">Figure 1. Filtro Gaussiano</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../imgs/lapla.png" alt="lapla">
+</div>
+<div class="title">Figure 2. Filtro Laplaciano</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../imgs/log.png" alt="log">
+</div>
+<div class="title">Figure 3. Filtro LoG</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-09-10 15:55:04 -03
+Last updated 2017-09-10 15:30:30 -03
 </div>
 </div>
 </body>

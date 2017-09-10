@@ -12,7 +12,9 @@ Tarefas desenvolvidas na primeira unidade do semestre.
 * link:bolhas/teste.html[Bolhas] - Tarefa implementada para a contagem de objetos em uma cena
 * link:troca-regioes/troca.html[Troca de Regiões] - Tarefa implementada para trocar quadrantes de uma imagem
 * link:histograma/equalizacao.html[Equalização de Histograma]  - Tarefa implementada para mostrar imagem de fluxo de vídeo com histograma equalizado
-* link:histograma/motion-detect.html[Detecção de movimento] - Tarega implementada para realizar detecção de movimento em um fluxo de vídeo via comparação de histogramas
+* link:histograma/motion-detect.html[Detecção de movimento] - Tarefa implementada para realizar detecção de movimento em um fluxo de vídeo via comparação de histogramas
+* link:filtragem1/lap_gauss.html[Laplaciano do Gaussiano (LoG)] - Tarefa realizada para implementação de um filtro detector de bordas e atenuador de ruídos
+
 
 
 
