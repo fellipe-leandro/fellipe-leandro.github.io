@@ -9,6 +9,7 @@ Essa página reúne todas as tarefas implementadas  para a disciplina Processame
 
 Tarefas desenvolvidas na primeira unidade do semestre.
 
+* link:negativo/negativo.html[Negativo] - Tarefa implementada para realizar cálculo de negativo de uma imagem
 * link:bolhas/teste.html[Bolhas] - Tarefa implementada para a contagem de objetos em uma cena
 * link:troca-regioes/troca.html[Troca de Regiões] - Tarefa implementada para trocar quadrantes de uma imagem
 * link:histograma/equalizacao.html[Equalização de Histograma]  - Tarefa implementada para mostrar imagem de fluxo de vídeo com histograma equalizado

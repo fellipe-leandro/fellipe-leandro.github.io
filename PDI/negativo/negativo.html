@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
 <meta name="author" content="Fellipe Augusto, Jessika Cristina">
-<title>Tarefas PDI</title>
+<title>Negativo de uma imagem</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -425,74 +425,176 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
+<style>
+.listingblock .pygments .hll { background-color: #ffffcc }
+.listingblock .pygments, .listingblock .pygments code { background: #f8f8f8; }
+.listingblock .pygments .tok-c { color: #408080; font-style: italic } /* Comment */
+.listingblock .pygments .tok-err { border: 1px solid #FF0000 } /* Error */
+.listingblock .pygments .tok-k { color: #008000; font-weight: bold } /* Keyword */
+.listingblock .pygments .tok-o { color: #666666 } /* Operator */
+.listingblock .pygments .tok-cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.listingblock .pygments .tok-cp { color: #BC7A00 } /* Comment.Preproc */
+.listingblock .pygments .tok-c1 { color: #408080; font-style: italic } /* Comment.Single */
+.listingblock .pygments .tok-cs { color: #408080; font-style: italic } /* Comment.Special */
+.listingblock .pygments .tok-gd { color: #A00000 } /* Generic.Deleted */
+.listingblock .pygments .tok-ge { font-style: italic } /* Generic.Emph */
+.listingblock .pygments .tok-gr { color: #FF0000 } /* Generic.Error */
+.listingblock .pygments .tok-gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.listingblock .pygments .tok-gi { color: #00A000 } /* Generic.Inserted */
+.listingblock .pygments .tok-go { color: #888888 } /* Generic.Output */
+.listingblock .pygments .tok-gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.listingblock .pygments .tok-gs { font-weight: bold } /* Generic.Strong */
+.listingblock .pygments .tok-gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.listingblock .pygments .tok-gt { color: #0044DD } /* Generic.Traceback */
+.listingblock .pygments .tok-kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.listingblock .pygments .tok-kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.listingblock .pygments .tok-kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.listingblock .pygments .tok-kp { color: #008000 } /* Keyword.Pseudo */
+.listingblock .pygments .tok-kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.listingblock .pygments .tok-kt { color: #B00040 } /* Keyword.Type */
+.listingblock .pygments .tok-m { color: #666666 } /* Literal.Number */
+.listingblock .pygments .tok-s { color: #BA2121 } /* Literal.String */
+.listingblock .pygments .tok-na { color: #7D9029 } /* Name.Attribute */
+.listingblock .pygments .tok-nb { color: #008000 } /* Name.Builtin */
+.listingblock .pygments .tok-nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.listingblock .pygments .tok-no { color: #880000 } /* Name.Constant */
+.listingblock .pygments .tok-nd { color: #AA22FF } /* Name.Decorator */
+.listingblock .pygments .tok-ni { color: #999999; font-weight: bold } /* Name.Entity */
+.listingblock .pygments .tok-ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.listingblock .pygments .tok-nf { color: #0000FF } /* Name.Function */
+.listingblock .pygments .tok-nl { color: #A0A000 } /* Name.Label */
+.listingblock .pygments .tok-nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.listingblock .pygments .tok-nt { color: #008000; font-weight: bold } /* Name.Tag */
+.listingblock .pygments .tok-nv { color: #19177C } /* Name.Variable */
+.listingblock .pygments .tok-ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.listingblock .pygments .tok-w { color: #bbbbbb } /* Text.Whitespace */
+.listingblock .pygments .tok-mb { color: #666666 } /* Literal.Number.Bin */
+.listingblock .pygments .tok-mf { color: #666666 } /* Literal.Number.Float */
+.listingblock .pygments .tok-mh { color: #666666 } /* Literal.Number.Hex */
+.listingblock .pygments .tok-mi { color: #666666 } /* Literal.Number.Integer */
+.listingblock .pygments .tok-mo { color: #666666 } /* Literal.Number.Oct */
+.listingblock .pygments .tok-sb { color: #BA2121 } /* Literal.String.Backtick */
+.listingblock .pygments .tok-sc { color: #BA2121 } /* Literal.String.Char */
+.listingblock .pygments .tok-sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.listingblock .pygments .tok-s2 { color: #BA2121 } /* Literal.String.Double */
+.listingblock .pygments .tok-se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.listingblock .pygments .tok-sh { color: #BA2121 } /* Literal.String.Heredoc */
+.listingblock .pygments .tok-si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.listingblock .pygments .tok-sx { color: #008000 } /* Literal.String.Other */
+.listingblock .pygments .tok-sr { color: #BB6688 } /* Literal.String.Regex */
+.listingblock .pygments .tok-s1 { color: #BA2121 } /* Literal.String.Single */
+.listingblock .pygments .tok-ss { color: #19177C } /* Literal.String.Symbol */
+.listingblock .pygments .tok-bp { color: #008000 } /* Name.Builtin.Pseudo */
+.listingblock .pygments .tok-vc { color: #19177C } /* Name.Variable.Class */
+.listingblock .pygments .tok-vg { color: #19177C } /* Name.Variable.Global */
+.listingblock .pygments .tok-vi { color: #19177C } /* Name.Variable.Instance */
+.listingblock .pygments .tok-il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
 </head>
 <body class="article">
 <div id="header">
-<h1>Tarefas PDI</h1>
+<h1>Negativo de uma imagem</h1>
 <div class="details">
 <span id="author" class="author">Fellipe Augusto</span><br>
 <span id="author2" class="author">Jessika Cristina</span><br>
 </div>
 </div>
 <div id="content">
-<div id="preamble">
+<div class="sect1">
+<h2 id="_definição_do_problema">Definição do problema</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Essa página reúne todas as tarefas implementadas  para a disciplina Processamento Digital de Imagens durante  o semestre 2017.2</p>
+<p>Deve-se iplementar um programa que permita ao usuário inserir as coordenadas de dois pontos (P<sub>1</sub> e P<sub>2</sub>) de uma imagem. Deve-se então, tirar o "negativo" dos pixels inseridos dentro da área retangular definida por esses dois pontos.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_unidade_1">Unidade 1</h2>
+<h2 id="_solução_proposta">Solução proposta</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Tarefas desenvolvidas na primeira unidade do semestre.</p>
+<p>Segue programa proposto:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="negativo/negativo.html">Negativo</a> - Tarefa implementada para realizar cálculo de negativo de uma imagem</p>
-</li>
-<li>
-<p><a href="bolhas/teste.html">Bolhas</a> - Tarefa implementada para a contagem de objetos em uma cena</p>
-</li>
-<li>
-<p><a href="troca-regioes/troca.html">Troca de Regiões</a> - Tarefa implementada para trocar quadrantes de uma imagem</p>
-</li>
-<li>
-<p><a href="histograma/equalizacao.html">Equalização de Histograma</a>  - Tarefa implementada para mostrar imagem de fluxo de vídeo com histograma equalizado</p>
-</li>
-<li>
-<p><a href="histograma/motion-detect.html">Detecção de movimento</a> - Tarefa implementada para realizar detecção de movimento em um fluxo de vídeo via comparação de histogramas</p>
-</li>
-<li>
-<p><a href="filtragem1/lap_gauss.html">Laplaciano do Gaussiano (LoG)</a> - Tarefa realizada para implementação de um filtro detector de bordas e atenuador de ruídos</p>
-</li>
-</ul>
+<div class="listingblock">
+<div class="title">negativo.cpp</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span class="tok-cp">#include &lt;iostream&gt;</span>
+<span class="tok-cp">#include &lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">std</span><span class="tok-p">;</span>
+<span class="tok-k">using</span> <span class="tok-k">namespace</span> <span class="tok-n">cv</span><span class="tok-p">;</span>
+
+<span class="tok-kt">int</span> <span class="tok-nf">main</span><span class="tok-p">(){</span>
+    <span class="tok-n">Mat</span> <span class="tok-n">image</span><span class="tok-p">;</span>
+    <span class="tok-kt">int</span> <span class="tok-n">rows</span><span class="tok-p">;</span>
+    <span class="tok-kt">int</span> <span class="tok-n">cols</span><span class="tok-p">;</span>
+    <span class="tok-kt">int</span> <span class="tok-n">p1</span><span class="tok-p">[</span><span class="tok-mi">2</span><span class="tok-p">];</span>
+    <span class="tok-kt">int</span> <span class="tok-n">p2</span><span class="tok-p">[</span><span class="tok-mi">2</span><span class="tok-p">];</span>
+    <span class="tok-n">image</span><span class="tok-o">=</span><span class="tok-n">imread</span><span class="tok-p">(</span><span class="tok-s">&quot;biel.png&quot;</span><span class="tok-p">,</span><span class="tok-n">CV_LOAD_IMAGE_GRAYSCALE</span><span class="tok-p">);</span>
+    <span class="tok-k">if</span><span class="tok-p">(</span><span class="tok-o">!</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">data</span><span class="tok-p">)</span>
+        <span class="tok-n">cout</span><span class="tok-o">&lt;&lt;</span><span class="tok-s">&quot;nao abriu arquivo&quot;</span><span class="tok-o">&lt;&lt;</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+    <span class="tok-n">namedWindow</span><span class="tok-p">(</span><span class="tok-s">&quot;janela&quot;</span><span class="tok-p">,</span><span class="tok-n">WINDOW_AUTOSIZE</span><span class="tok-p">);</span>
+    <span class="tok-n">rows</span><span class="tok-o">=</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">rows</span><span class="tok-p">;</span>
+    <span class="tok-n">cols</span><span class="tok-o">=</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">cols</span><span class="tok-p">;</span>
+    <span class="tok-n">cout</span><span class="tok-o">&lt;&lt;</span><span class="tok-s">&quot;Digite P1:&quot;</span><span class="tok-o">&lt;&lt;</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+    <span class="tok-n">cin</span><span class="tok-o">&gt;&gt;</span><span class="tok-n">p1</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">&gt;&gt;</span><span class="tok-n">p1</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">];</span>
+    <span class="tok-n">cout</span><span class="tok-o">&lt;&lt;</span><span class="tok-s">&quot;Digite P2:&quot;</span><span class="tok-o">&lt;&lt;</span><span class="tok-n">endl</span><span class="tok-p">;</span>
+    <span class="tok-n">cin</span><span class="tok-o">&gt;&gt;</span><span class="tok-n">p2</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">]</span><span class="tok-o">&gt;&gt;</span><span class="tok-n">p2</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">];</span>
+    <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">x</span><span class="tok-o">=</span><span class="tok-n">p1</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">];</span><span class="tok-n">x</span><span class="tok-o">&lt;=</span><span class="tok-n">p2</span><span class="tok-p">[</span><span class="tok-mi">0</span><span class="tok-p">];</span><span class="tok-n">x</span><span class="tok-o">++</span><span class="tok-p">){</span>
+        <span class="tok-k">for</span><span class="tok-p">(</span><span class="tok-kt">int</span> <span class="tok-n">y</span><span class="tok-o">=</span><span class="tok-n">p1</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">];</span><span class="tok-n">y</span><span class="tok-o">&lt;=</span><span class="tok-n">p2</span><span class="tok-p">[</span><span class="tok-mi">1</span><span class="tok-p">];</span><span class="tok-n">y</span><span class="tok-o">++</span><span class="tok-p">){</span>
+            <span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">x</span><span class="tok-p">,</span><span class="tok-n">y</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-mi">255</span><span class="tok-o">-</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">x</span><span class="tok-p">,</span><span class="tok-n">y</span><span class="tok-p">);</span> <span class="tok-c1">//operação de fazer o negativo</span>
+
+        <span class="tok-p">}</span>
+    <span class="tok-p">}</span>
+    <span class="tok-n">imshow</span><span class="tok-p">(</span><span class="tok-s">&quot;janela&quot;</span><span class="tok-p">,</span> <span class="tok-n">image</span><span class="tok-p">);</span>
+    <span class="tok-n">waitKey</span><span class="tok-p">();</span>
+    <span class="tok-k">return</span> <span class="tok-mi">0</span><span class="tok-p">;</span>
+<span class="tok-p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A parte central do programa está na linha:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="cpp"><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">x</span><span class="tok-p">,</span><span class="tok-n">y</span><span class="tok-p">)</span><span class="tok-o">=</span><span class="tok-mi">255</span><span class="tok-o">-</span><span class="tok-n">image</span><span class="tok-p">.</span><span class="tok-n">at</span><span class="tok-o">&lt;</span><span class="tok-n">uchar</span><span class="tok-o">&gt;</span><span class="tok-p">(</span><span class="tok-n">x</span><span class="tok-p">,</span><span class="tok-n">y</span><span class="tok-p">);</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Onde se realiza a operação de subtrair 255 (valor máximo do nível de cinza considerando valores do tipo <code>uchar</code>) do nível original da imagem.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_resultados_e_considerações_finais">Resultados e Considerações Finais</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Temos a imagem original:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../imgs/biel.png" alt="biel">
+</div>
+<div class="title">Figure 1. Imagem de Entrada do programa</div>
+</div>
+<div class="paragraph">
+<p>E  a saída do programa é mostrada a seguir, exibindo as coordenadas dos pontos da área retangular a ter seu negativo executado.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../imgs/negativo.png" alt="negativo">
+</div>
+<div class="title">Figure 2. Saída do programa</div>
+</div>
+<div class="paragraph">
+<p>É necessária ainda a implementação de uma sub-rotina para checar se o usuário digitou coordenadas válidas.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-09-13 00:23:03 -03
+Last updated 2017-09-13 00:26:55 -03
 </div>
 </div>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  messageStyle: "none",
-  tex2jax: {
-    inlineMath: [["\\(", "\\)"]],
-    displayMath: [["\\[", "\\]"]],
-    ignoreClass: "nostem|nolatexmath"
-  },
-  asciimath2jax: {
-    delimiters: [["\\$", "\\$"]],
-    ignoreClass: "nostem|noasciimath"
-  },
-  TeX: { equationNumbers: { autoNumber: "none" } }
-});
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.6.0/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
 </body>
 </html>

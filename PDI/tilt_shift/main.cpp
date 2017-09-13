@@ -60,12 +60,13 @@ int top_slider_max = 100;
 
 Mat image1, image2,imageFiltered(256,256,CV_32F), blended;
 Mat imageTop;
+ Mat pondBlur,pondResultBlur(256,256,CV_8UC3),pondOrig,pondResultOrig(256,256,CV_8UC3);
 
 char TrackbarName[50];
 
 void on_trackbar_blend(int, void*){
  alfa = (double) alfa_slider/alfa_slider_max ;
- addWeighted( imageFiltered, alfa, imageTop, 1-alfa, 0.0, blended);
+ addWeighted(imageFiltered, alfa, imageTop, 1-alfa, 0.0, blended);
  imshow("addweighted", blended);
 }
 
@@ -73,7 +74,7 @@ void on_trackbar_line(int, void*){
   imageFiltered.copyTo(imageTop);
   int limit = top_slider*255/100;
   if(limit > 0){
-    Mat tmp = image2(Rect(0, 0, 256, limit));
+    Mat tmp = pondResultOrig(Rect(0, 0, 256, limit));
     tmp.copyTo(imageTop(Rect(0, 0, 256, limit)));
   }
   on_trackbar_blend(alfa_slider,0);
@@ -85,26 +86,31 @@ int main(int argvc, char** argv){
                      1,1,1,
                      1,1,1};
   Mat mask(3,3,CV_32F,media),mask1;
-  image1 = imread("train1.jpg");
+  image1 = imread("../imgs/train1.jpg");
   image1.convertTo(image2,CV_32F);
   scaleAdd(mask, 1/9.0, Mat::zeros(3,3,CV_32F), mask1);
   swap(mask, mask1);
   filter2D(image1, imageFiltered, image1.depth(), mask, Point(1,1), 0);
-  namedWindow("filtroespacial", WINDOW_AUTOSIZE);
-  imshow("filtroespacial", imageFiltered);
+//  namedWindow("filtroespacial", WINDOW_AUTOSIZE);
+//  imshow("filtroespacial", imageFiltered);
 
 //----------------------------------------//-------------------------------------------------
-  Mat pondBlur,pondResult(256,256,CV_8UC3);
-  pondBlur=imread("pond_blur.jpg");
+  Mat pondBlur,pondResultBlur(256,256,CV_8UC3),pondOrig,pondResultOrig(256,256,CV_8UC3);
+  pondBlur=imread("../imgs/pond_blur.jpg");
+  pondOrig=imread("../imgs/pond_orig.jpg");
   cout<<GetMatType(pondBlur)<<endl;
   cout<<GetMatType(imageFiltered)<<endl;
-  cout<<GetMatType(pondResult)<<endl;
+  cout<<GetMatType(pondResultBlur)<<endl;
   //pondBlur.convertTo(pondBlur,CV_32F);
-  pondResult=imageFiltered.mul(pondBlur);
-
+  //pondResult=imageFiltered.mul(pondBlur);
+  multiply(imageFiltered,pondBlur,pondResultBlur,0.005);
+  multiply(image1,pondOrig,pondResultOrig,0.007);
   namedWindow("Ponderação-Blur");
-  imshow("Ponderação-Blur",pondResult);
-  image2 = imread("train1.jpg");
+  imshow("Ponderação-Blur",pondResultBlur);
+
+  namedWindow("Ponderação-Original");
+  imshow("Ponderação-Original",pondResultOrig);
+  image2 = imread("../imgs/train1.jpg");
   image2.copyTo(imageTop);
   namedWindow("addweighted", 1);
 
