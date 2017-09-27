@@ -4,7 +4,4 @@ CONFIG -= app_bundle
 CONFIG -= qt
 INCLUDEPATH += /usr/local/include/opencv
 LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_imgproc
-SOURCES += main.cpp \
-    main 1.cpp \
-    main 1.cpp \
-    main 1.cpp
+SOURCES += main.cpp

@@ -51,27 +51,80 @@ std::string GetMatType(const cv::Mat& mat)
         return "Invalid type of matrix!";
     }
 }
-double alfa;
+double alfa[256];
+//double alfa;
+
+
 int alfa_slider = 0;
 int alfa_slider_max = 100;
 
 int top_slider = 0;
 int top_slider_max = 100;
 
-Mat image1, image2,imageFiltered(256,256,CV_32F), blended;
+double d;
+int d_slider=0;
+int d_slider_max=100;
+
+double l1;
+int l1_slider=0;
+int l1_slider_max=100;
+
+double l2;
+int l2_slider=0;
+int l2_slider_max=100;
+
+Mat image1, image2,imageFiltered(256,256,CV_32F), blended(256,256,CV_8UC3);
 Mat imageTop;
 Mat pondBlur,pondResultBlur(256,256,CV_8UC3),pondOrig,pondResultOrig(256,256,CV_8UC3);
 
 char TrackbarName[50];
 
+
+
+
 void on_trackbar_blend(int, void*){
- alfa = (double) alfa_slider/alfa_slider_max ;
- addWeighted(imageFiltered, alfa, imageTop, 1-alfa, 0.0, blended);
+l1=-20;
+l2=30;
+d=2;
+ //alfa = (double) alfa_slider/alfa_slider_max ;
+ for(int i=0;i<256;i++){
+     alfa[i]=1/2*(tanh((i-l1)/d)-tanh((i-l2)/d));
+     addWeighted(pondResultBlur.row(i), alfa[i], imageTop.row(i), 1-alfa[i], 0.0, blended.row(i));
+ }
+ //addWeighted(pondResultBlur, alfa, imageTop, 1-alfa, 0.0, blended);
+
+
  imshow("addweighted", blended);
+
+}
+
+
+void on_trackbar_d(int,void*){
+    d= (double) d_slider/d_slider_max;
+    for(int i=0;i<256;i++){
+        alfa[i]=1/2*(tanh((i-l1)/d)-tanh((i-l2)/d));
+        addWeighted(pondResultBlur.row(i), alfa[i], imageTop.row(i), 1-alfa[i], 0.0, blended.row(i));
+    }
+}
+
+void on_trackbar_l1(int,void*){
+    l1=(double)(l1_slider/l1_slider_max);
+    for(int i=0;i<256;i++){
+        alfa[i]=1/2*(tanh((i-l1)/d)-tanh((i-l2)/d));
+        addWeighted(pondResultBlur.row(i), alfa[i], imageTop.row(i), 1-alfa[i], 0.0, blended.row(i));
+    }
+}
+
+void on_trackbar_l2(int,void*){
+    l2=(double)(l2_slider/l2_slider_max);
+    for(int i=0;i<256;i++){
+        alfa[i]=1/2*(tanh((i-l1)/d)-tanh((i-l2)/d));
+        addWeighted(pondResultBlur.row(i), alfa[i], imageTop.row(i), 1-alfa[i], 0.0, blended.row(i));
+    }
 }
 
 void on_trackbar_line(int, void*){
-  imageFiltered.copyTo(imageTop);
+  pondResultBlur.copyTo(imageTop);
   int limit = top_slider*255/100;
   if(limit > 0){
     Mat tmp = pondResultOrig(Rect(0, 0, 256, limit));
@@ -86,7 +139,7 @@ int main(int argvc, char** argv){
                      1,1,1,
                      1,1,1};
   Mat mask(3,3,CV_32F,media),mask1;
-  image1 = imread("../imgs/train1.jpg");
+  image1 = imread("train1.jpg");
   image1.convertTo(image2,CV_32F);
   scaleAdd(mask, 1/9.0, Mat::zeros(3,3,CV_32F), mask1);
   swap(mask, mask1);
@@ -95,12 +148,12 @@ int main(int argvc, char** argv){
 //  imshow("filtroespacial", imageFiltered);
 
 //----------------------------------------//-------------------------------------------------
-  Mat pondBlur,pondResultBlur(256,256,CV_8UC3),pondOrig,pondResultOrig(256,256,CV_8UC3);
-  pondBlur=imread("../imgs/pond_blur.jpg");
-  pondOrig=imread("../imgs/pond_orig.jpg");
-  cout<<GetMatType(pondBlur)<<endl;
-  cout<<GetMatType(imageFiltered)<<endl;
+  //Mat pondBlur,pondResultBlur(256,256,CV_8UC3),pondOrig,pondResultOrig(256,256,CV_8UC3);
+  pondBlur=imread("pond_blur.jpg");
+  pondOrig=imread("pond_orig.jpg");
   cout<<GetMatType(pondResultBlur)<<endl;
+  cout<<GetMatType(pondResultOrig)<<endl;
+  cout<<GetMatType(blended)<<endl;
   //pondBlur.convertTo(pondBlur,CV_32F);
   //pondResult=imageFiltered.mul(pondBlur);
   multiply(imageFiltered,pondBlur,pondResultBlur,0.005);
@@ -110,9 +163,23 @@ int main(int argvc, char** argv){
 
   namedWindow("Ponderação-Original");
   imshow("Ponderação-Original",pondResultOrig);
-  image2 = imread("../imgs/train1.jpg");
-  image2.copyTo(imageTop);
+  image2 = imread("train1.jpg");
+  pondResultOrig.copyTo(imageTop);
   namedWindow("addweighted", 1);
+//  alfa=0.6;
+//  addWeighted(pondResultBlur, alfa, pondResultOrig, 1-alfa, 0.0, blended);
+
+  l1=-20;
+  l2=30;
+  d=6;
+
+   for(int i=0;i<256;i++){
+       alfa[i]=tanh(((double)i+20.0));
+
+       addWeighted(pondResultBlur.row(i), alfa[i], imageTop.row(i), 1-alfa[i], 0.0, blended.row(i));
+       cout<<"alfa "<<alfa[i]<<endl;
+   }
+  imshow("teste", blended);
 
   sprintf( TrackbarName, "Alpha x %d", alfa_slider_max );
   createTrackbar(TrackbarName, "addweighted",
@@ -127,6 +194,27 @@ int main(int argvc, char** argv){
                   top_slider_max,
                   on_trackbar_line );
   on_trackbar_line(top_slider, 0 );
+
+  sprintf( TrackbarName, "d x %d", d_slider_max );
+  createTrackbar(TrackbarName, "addweighted",
+                  &d_slider,
+                  d_slider_max,
+                  on_trackbar_d);
+  on_trackbar_d(d_slider, 0 );
+
+  sprintf( TrackbarName, "l1 x %d", l1_slider_max );
+  createTrackbar(TrackbarName, "addweighted",
+                  &l1_slider,
+                  l1_slider_max,
+                  on_trackbar_l1 );
+  on_trackbar_l1(l1_slider, 0 );
+
+  sprintf( TrackbarName, "l2 x %d", l2_slider_max );
+  createTrackbar(TrackbarName, "addweighted",
+                  &l2_slider,
+                  l2_slider_max,
+                  on_trackbar_l2 );
+  on_trackbar_line(l2_slider, 0 );
 
   waitKey(0);
   return 0;
