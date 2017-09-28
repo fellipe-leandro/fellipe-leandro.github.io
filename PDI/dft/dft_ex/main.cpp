@@ -1,11 +1,16 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <cmath>
 
 #define RADIUS 20
 
 using namespace cv;
 using namespace std;
+float c;
+int c_slider;
+int c_slider_max=100;
+char TrackbarName[50];
 
 // troca os quadrantes da imagem da DFT
 void deslocaDFT(Mat& image ){
@@ -32,13 +37,22 @@ void deslocaDFT(Mat& image ){
   C.copyTo(tmp);  B.copyTo(C);  tmp.copyTo(B);
 }
 
+void on_trackbar_c(int,void*){
+    c=(double)c_slider/c_slider_max;
+}
 int main(int , char**){
   VideoCapture cap;
   Mat imaginaryInput, complexImage, multsp;
-  Mat padded, filter, mag;
-  Mat image, imagegray, tmp;
+  Mat padded, filter, mag,filterH;
+  Mat image, imagegray, tmp,tmpH;
   Mat_<float> realInput, zeros;
   vector<Mat> planos;
+  //parâmetros do filtro homomórfico
+  float gamaL, gamaH,D0,D;
+  gamaL=0.5;
+  gamaH=2;
+  //c=0.5;
+
 
   // habilita/desabilita ruido
   int noise=0;
@@ -65,12 +79,12 @@ int main(int , char**){
   // captura uma imagem para recuperar as
   // informacoes de gravação
 //  cap >> image;
-  image=imread("lena.jpg",CV_LOAD_IMAGE_COLOR);
+  image=imread("biel_h.png",CV_LOAD_IMAGE_COLOR);
   if(!image.data){
       cout<<"nao abriu"<<endl;
       return 0;
   }
-
+  namedWindow("filtrada",1);
   // identifica os tamanhos otimos para
   // calculo do FFT
   dft_M = getOptimalDFTSize(image.rows);
@@ -91,10 +105,12 @@ int main(int , char**){
   // a função de transferência (filtro frequencial) deve ter o
   // mesmo tamanho e tipo da matriz complexa
   filter = complexImage.clone();
+  filterH=complexImage.clone();
 
   // cria uma matriz temporária para criar as componentes real
   // e imaginaria do filtro ideal
   tmp = Mat(dft_M, dft_N, CV_32F);
+  tmpH = Mat(dft_M,dft_N,CV_32F);
 
   // prepara o filtro passa-baixas ideal
   for(int i=0; i<dft_M; i++){
@@ -105,11 +121,18 @@ int main(int , char**){
     }
   }
 
+
+
   // cria a matriz com as componentes do filtro e junta
   // ambas em uma matriz multicanal complexa
   Mat comps[]= {tmp, tmp};
   merge(comps, 2, filter);
-
+  sprintf( TrackbarName, "Alpha x %d", c_slider_max );
+  createTrackbar( TrackbarName, "filtrada",
+                  &c_slider,
+                  c_slider_max,
+                  on_trackbar_c );
+  on_trackbar_c(c_slider, 0 );
   for(;;){
     //cap >> image;
     cvtColor(image, imagegray, CV_BGR2GRAY);
@@ -136,12 +159,28 @@ int main(int , char**){
 
     // calcula o dft
     dft(complexImage, complexImage);
+    D0=complexImage.at<float>(dft_M/2,dft_N/2);
+    //prepara filtro Homomórfico
+    for(int i=0; i<dft_M; i++){
+      for(int j=0; j<dft_N; j++){
+        D=complexImage.at<float>(i,j);
+        tmpH.at<float>(i,j)=(gamaH-gamaL)*(1-exp(-c*(D*D)/(D0*D0)))+gamaH;
+
+      }
+    }
+    cout<<"C value: "<<c<<endl;
+    Mat compsH[]= {tmpH, tmpH};
+    merge(compsH, 2, filterH);
+
+
 
     // realiza a troca de quadrantes
     deslocaDFT(complexImage);
 
     // aplica o filtro frequencial
-    mulSpectrums(complexImage,filter,complexImage,0);
+    //mulSpectrums(complexImage,filter,complexImage,0);
+    //aplica o filtro homomorfico
+    mulSpectrums(complexImage,filterH,complexImage,0);
 
     // limpa o array de planos
     planos.clear();
