@@ -7,7 +7,7 @@ Access my projects on Digital Image Processing!
 [PDI Projects](PDI/index.html)
 
 Access my projects on x86 Assembly Programming!
-[Assembly Projects](arquitetura/index.html)
+[Assembly Projects](arquitetura/arc_index.html)
 
 
 
