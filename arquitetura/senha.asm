@@ -3,9 +3,9 @@ section .data
 senha1      db 'casa'
 msg_1       db 'Bem-vindo',0
 len_msg_1   equ $-msg_1       
-msg_2       db 'Digite sua senha',0
+msg_2       db 'Digite sua senha: ',0
 len_msg_2   equ $-msg_2
-msg_err     db 'Senha errada,digite novamente',0
+msg_err     db 'Senha errada,digite novamente: ',0
 len_msg_err equ $-msg_err
 msg_ok      db 'Senha correta - FIM',0
 len_msg_ok  equ $-msg_ok
@@ -38,31 +38,40 @@ InsertChar:
    ; read and store user input
     mov eax,3       ;sys_read
     mov ebx,0       ;stdin?
-    push ecx
+    push ecx        ;ecx is required for read process and for loop routine, so it's necessary to save it on stack
     mov ecx,esi
-    mov edx,1
+    mov edx,1       ;bytes to read
     int 0x80
     pop ecx
     inc esi
     loop InsertChar
 
 CompPsswdSetup:
-    mov ecx,0x4
-    mov esi,senha1
+    mov ecx,0x4     ;loop of 4 interactions
+    mov esi,senha1  ;data to be compared
     mov ebx,psswd
 CompPsswd:
     mov al,[esi]
-    mov ah,[esi]
+    mov ah,[ebx]
     cmp al,ah
-;    jne MsgErr
-;    inc esi
-;    inc ebx
-;    loop CompPsswd
-;    jmp MsgOk
-    
-    
-
-    
+    jne MsgErr  ;if bytes are not equal, then passwords don't match
+    inc esi
+    inc ebx
+    loop CompPsswd
+    jmp MsgOk
+MsgErr:
+    mov eax,4       ;sys_write
+    mov ebx,1       ;stdout
+    mov ecx,msg_err ;pointer to variable
+    mov edx,len_msg_err ;size of buffer
+    int 0x80
+    jmp InsertCharSetup
+MsgOk:
+    mov eax,4       ;sys_write
+    mov ebx,1       ;stdout
+    mov ecx,msg_ok ;pointer to variable
+    mov edx,len_msg_ok ;size of buffer
+    int 0x80
     ;Exit
     mov eax,1
     ;mov ebx,0
