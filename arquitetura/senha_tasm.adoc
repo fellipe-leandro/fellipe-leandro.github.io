@@ -1,0 +1,102 @@
+= TASM application
+Fellipe Augusto <faugusto12@gmail.com>
+:source-highlighter: pygments
+
+In my class of Computer Architecture and Programming, the first developing enviroment presented was TASM. Tasm is an enviroment destinated to real mode programming, so, we have to programming thinking on 16-bit world. The implemented application is a string comparator, like a system to check passwords. The code is down below:
+
+.senha.asm
+[source,asm]
+----
+TITLE - PROGRAMA TUTORIAL  1 - TASM
+COMMENT *PROGRAMA EXEMPLO FEITO EM UMA UNICA PROCEDURE -
+         ESTE PROGRAMA DEVE SER EXECUTADO ATRAVES DO DEBUG
+         AUTOR: FELLIPE AUGUSTO *
+
+;SENHA2 EQU "sa"
+
+;Area de definição de modelo
+	DOSSEG
+	.MODEL small
+;Area de definição de pilha
+	.STACK
+
+;Area de definição de dados
+
+	.DATA
+
+SENHA1  DB  "casa"
+;val1	DW 	00H
+;val2 	DW	00H
+MSG_1   DB 'Bem-vindo','$'
+MSG_2	DB 'Digite sua senha','$'
+MSG_ERR DB 'Senha errada, digite novamente','$'
+MSG_OK  DB 'Senha correta-FIM','$'
+PSSWD	DB  4 DUP(0)
+
+	.CODE
+PPrinc  PROC		; Inicio do procedimento "PPrinc"
+    MOV AX,@DATA   	;
+    MOV DS,Ax       ; Faz DS apontar para area de dados do programa
+    ;lea dx,val1
+    ;lea dx, val2
+    LEA 	DX,MSG_1 	;Printar msg inicial
+    MOV 	AH,09H
+    INT 	21H
+    CALL    ENDL 		;Função para printar quebra de linha
+    LEA 	DX,MSG_2
+    MOV 	AH,09H
+    INT 	21H
+
+InsertCharSetup:        		;;Inicio da contagem de caracteres -> Senhas de 4 caracteres
+    MOV 	CX,04h				;4 caracteres
+    MOV 	SI,OFFSET PSSWD
+
+InsertChar:
+	MOV 	AH,08H				;Leitura de caracter sem eco
+	INT     21H
+	MOV 	[SI],AL				;Move retorno da função para endereço apontado por SI
+	INC     SI
+	LOOP 	InsertChar
+	MOV 	CX,04H				;Setup para rotina de comparação de caracteres
+	MOV     SI,OFFSET SENHA1
+	MOV     BX,OFFSET PSSWD
+CompPSSWD:
+
+	MOV     AL,[SI]
+	MOV     AH,[BX]
+
+	CMP     AL,AH
+	JNE     MsgErr
+	INC 	SI
+	INC     BX
+	LOOP    CompPSSWD
+	JMP     MsgOk
+MsgErr:
+	LEA 	DX,MSG_ERR
+	MOV     AH,09H
+	INT     21H
+	CALL    ENDL
+	JMP     InsertCharSetup
+
+MsgOk:
+    LEA     DX,MSG_OK
+    MOV     AH,09H
+    INT     21H
+    CALL    ENDL
+	MOV 	AH,4Ch	    ; Função para encerrar programa e retornar ao SO
+    INT 	21H
+PPrinc  ENDP			; Diretiva para enceramento da procedure "PPrinc"
+
+
+
+
+
+
+ENDL:
+    MOV DL, 0AH 	;Caracter LineBreak na tabela ASCII
+    MOV AH, 02h		;Preparando para chamar int21 na funçao Saída de caractere na tela
+    INT 21H
+    RET
+
+        END PPrinc	; Diretiva de encerramento de montagem
+----

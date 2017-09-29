@@ -4,7 +4,10 @@ On this page you'll get some projects that I've been developing for some courses
 # Projects
 ## PDI 
 Access my projects on Digital Image Processing!
-[Projects](PDI/index.html)
+[PDI Projects](PDI/index.html)
+Access my projects on x86 Assembly Programming!
+[Assembly Projects](arquitetura/senha_masm.html)
+
 
 
 # About
