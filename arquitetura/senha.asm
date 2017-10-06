@@ -1,3 +1,7 @@
+;Este programa realiza uma comparação de strings, tendo como base uma aplicação de "match" de senhas
+;Guia para montagem via terminal:
+;nasm -f elf senha.asm
+;ld -s -o output senha.o -melf_i386
 section .data
 
 senha1      db 'casa'
