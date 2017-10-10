@@ -1,0 +1,7 @@
+= Computer Architecture and Programming Projects
+Fellipe Augusto <faugusto12@gmail.com>
+
+This page is about the projects that I'm developing on x86 Assembly language to the class of Computer Architecture and Programming.
+
+
+* link:senha_tasm.html[Tasm Project] - First Application developed on TASM environment.

@@ -2,9 +2,13 @@
 On this page you'll get some projects that I've been developing for some courses in my university. First, I'll be posting some projects of the Digital Image Processing course, that I'm taking now, in 2017.2 semester. There will be mixing of Portuguese and English languages here!
 
 # Projects
-## PDI 
+
 Access my projects on Digital Image Processing!
-[Projects](PDI/index.html)
+[PDI Projects](PDI/index.html)
+
+Access my projects on x86 Assembly Programming!
+[Assembly Projects](arquitetura/arc_index.html)
+
 
 
 # About
