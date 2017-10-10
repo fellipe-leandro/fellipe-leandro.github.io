@@ -1,8 +1,14 @@
 = Filtro Homomórfico
 Fellipe Augusto;Jessika Cristina
 :source-highlighter: pygments
+stem:latexmath
 
 == Definição do problema
 Deve-se sugerir uma implementação de filtro homomórfico para melhorar imagens com uma iluminação irrelgular.
 
 ==Solução Proposta
+O filtro proposto baseia-se na seguinte equação:
+[latexmath]
++++++++++++++++++++++++++++++++++++++++++
+\[(\gamma_H-\gamma_L)]
++++++++++++++++++++++++++++++++++++++++++
