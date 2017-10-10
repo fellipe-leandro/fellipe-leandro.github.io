@@ -10,6 +10,16 @@ using namespace std;
 float c;
 int c_slider;
 int c_slider_max=100;
+
+float gamaL=0.5;
+int gamaL_slider;
+int gamaL_slider_max=100;
+
+float gamaH=3;
+int gamaH_slider;
+int gamaH_slider_max=100;
+
+
 char TrackbarName[50];
 
 // troca os quadrantes da imagem da DFT
@@ -40,6 +50,16 @@ void deslocaDFT(Mat& image ){
 void on_trackbar_c(int,void*){
     c=(double)c_slider/c_slider_max;
 }
+
+void on_trackbar_gamaL(int,void*){
+    gamaL=(double)gamaL_slider/gamaL_slider_max;
+    //gamaL=(double)gamaL_slider;
+}
+void on_trackbar_gamaH(int, void*){
+    //gamaH=(double)gamaH/gamaH_slider_max;
+    gamaH=(double)gamaH_slider;
+}
+
 int main(int , char**){
   VideoCapture cap;
   Mat imaginaryInput, complexImage, multsp;
@@ -48,9 +68,9 @@ int main(int , char**){
   Mat_<float> realInput, zeros;
   vector<Mat> planos;
   //parâmetros do filtro homomórfico
-  float gamaL, gamaH,D0,D;
-  gamaL=0.5;
-  gamaH=2;
+  float D0,D;
+  //gamaL=0.5;
+  //gamaH=2;
   //c=0.5;
 
 
@@ -127,12 +147,28 @@ int main(int , char**){
   // ambas em uma matriz multicanal complexa
   Mat comps[]= {tmp, tmp};
   merge(comps, 2, filter);
-  sprintf( TrackbarName, "Alpha x %d", c_slider_max );
+  sprintf( TrackbarName, "C x %d", c_slider_max );
   createTrackbar( TrackbarName, "filtrada",
                   &c_slider,
                   c_slider_max,
                   on_trackbar_c );
   on_trackbar_c(c_slider, 0 );
+
+  sprintf( TrackbarName, "gamaL x %d", gamaL_slider_max );
+  createTrackbar( TrackbarName, "filtrada",
+                  &gamaL_slider,
+                  gamaL_slider_max,
+                  on_trackbar_gamaL );
+  on_trackbar_gamaL(gamaL_slider, 0 );
+
+  sprintf( TrackbarName, "gamaH x %d", gamaH_slider_max );
+  createTrackbar( TrackbarName, "filtrada",
+                  &gamaH_slider,
+                  gamaH_slider_max,
+                  on_trackbar_gamaH );
+  on_trackbar_gamaH(gamaH_slider, 0 );
+
+
   for(;;){
     //cap >> image;
     cvtColor(image, imagegray, CV_BGR2GRAY);
@@ -169,6 +205,8 @@ int main(int , char**){
       }
     }
     cout<<"C value: "<<c<<endl;
+    cout<<"gamaL value: "<<gamaL<<endl;
+    cout<<"gamaH value: "<<gamaH<<endl;
     Mat compsH[]= {tmpH, tmpH};
     merge(compsH, 2, filterH);
 
