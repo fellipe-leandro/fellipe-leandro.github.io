@@ -32,7 +32,7 @@ int main()
     newImg.create(matMain.size(),matMain.type());
     Scalar valor1;
     Scalar valor2;
-    for (int i=0;i<height;i++){
+    for (int i=0;i<height;i++){ //TROCAR por i<newImg.size().height
         for(int j=0;j<width;j++){
             valor1=matMain.at<uchar>(i,j); //selecionar 5 MS bits e zerar os 3 LS bits
             valor2=matHide.at<uchar>(i,j);
