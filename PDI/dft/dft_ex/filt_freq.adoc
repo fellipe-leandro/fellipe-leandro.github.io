@@ -1,6 +1,7 @@
 = Filtro Homomórfico
 Fellipe Augusto;Jessika Cristina
 :source-highlighter: pygments
+
 stem:latexmath
 
 == Definição do problema
@@ -337,7 +338,21 @@ As alterações feitas no código original consistiram na adição de trackbars 
 
 == Resultados e Considerações Finais
 
+A seguinte imagem foi testada:
 
+.Imagem de entrada do filtro
+image::../../imgs/biel_h.png[]
+
+E o filtro gerou a seguinte imagem como saida:
+
+.Imagem de saida do filtro
+image::../../imgs/biel_filt.jpg[]
+
+O filtro foi aplicado com os seguintes parâmetros:
+
+* c=0,36
+* stem:[\gamma_L] = 0,14
+* stem:[\gamma_H] = 84
 
 
 

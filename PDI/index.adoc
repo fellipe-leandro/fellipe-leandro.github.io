@@ -16,6 +16,13 @@ Tarefas desenvolvidas na primeira unidade do semestre.
 * link:histograma/motion-detect.html[Detecção de movimento] - Tarefa implementada para realizar detecção de movimento em um fluxo de vídeo via comparação de histogramas
 * link:filtragem1/lap_gauss.html[Laplaciano do Gaussiano (LoG)] - Tarefa realizada para implementação de um filtro detector de bordas e atenuador de ruídos
 
+== Unidade 2
+Tarefas desenvolvidas na segunda unidade do semestre
+
+* link:dft/dft_ex/filt_freq.html[Filtro Homomórfico] - Tarefa desenvolvida para implementação do filtro homomórfico
+
+
+
 
 
 
