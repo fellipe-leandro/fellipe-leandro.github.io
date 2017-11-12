@@ -15,7 +15,7 @@ int main()
 
 
     matMain=imread("../../imgs/forest.jpg",CV_LOAD_IMAGE_GRAYSCALE);
-    matHide=imread("../../imgs/noemie.jpg",CV_LOAD_IMAGE_GRAYSCALE);
+    matHide=imread("../../imgs/lena.jpg",CV_LOAD_IMAGE_GRAYSCALE);
     if((!matMain.data) || (!matHide.data)){
         cout<<"Falha em abrir arguma das imagens"<<endl;
     }
@@ -48,15 +48,18 @@ int main()
    // imshow("Imagem Original",matMain);
    // imshow("Imagem to hide",matHide);
     imshow("Imagem Final",newImg);
+    imwrite( "../../imgs/final1.pgm",newImg);
 
     waitKey();
+
+    Mat newImg1=imread("../../imgs/second.pgm",CV_LOAD_IMAGE_GRAYSCALE);
     //Etapa de separação
     splitMain.create(matMain.size(),matMain.type());
     splitHide.create(matHide.size(),matHide.type());
     for(int i=0;i<height;i++){
         for(int j=0;j<width;j++){
-            splitMain.at<uchar>(i,j)=newImg.at<uchar>(i,j)&0xF8;
-            splitHide.at<uchar>(i,j)=(newImg.at<uchar>(i,j)&0x07)<<5;
+            splitMain.at<uchar>(i,j)=newImg1.at<uchar>(i,j)&0xF8;
+            splitHide.at<uchar>(i,j)=(newImg1.at<uchar>(i,j)&0x07)<<5;
         }
 
     }

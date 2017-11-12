@@ -181,6 +181,7 @@ app.post('/upload', upload.array('file',2), function(req, res, next){
 
         /**
          * Use OpenCV to read the (resized) image
+
          */
         cv.readImage( src0, function (err,	im) {
         	cv.readImage(src1,function(err1,im1){
@@ -189,6 +190,7 @@ app.post('/upload', upload.array('file',2), function(req, res, next){
         		var valor2;
         		var MSBytes;
         		var LSBytes;
+        		//console.log(im.type())
         		for(var i=0; i<im.height();i=i+1){
         			for(var j=0; j<im.width();j=j+1){
         				valor1=im.get(i,j);
@@ -252,6 +254,16 @@ app.post('/upload', upload.array('file',2), function(req, res, next){
 
     }
   );
+
+});
+app.post('/uploadSplit', upload.single('fileToSplit'), function(req, res, next){
+    var inputImg = req.file.filename + exts[req.file.mimetype]
+    // nd source and destination filepaths
+    , src = __dirname + '/' + req.file.path
+    , dst = __dirname + '/public/images/' + filename;
+    console.log(inputImg);
+    
+
 
 });
 

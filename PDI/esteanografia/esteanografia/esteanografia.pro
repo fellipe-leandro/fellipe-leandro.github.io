@@ -5,4 +5,4 @@ CONFIG -= qt
 INCLUDEPATH += /usr/local/include/opencv
 LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui -lopencv_imgproc
 SOURCES += \
-    main_color.cpp
+    main.cpp

@@ -51,8 +51,8 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../esteanografia/main_color.cpp 
-OBJECTS       = main_color.o
+SOURCES       = ../esteanografia/main.cpp 
+OBJECTS       = main.o
 DIST          = /home/fellipe/Qt/5.9/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/fellipe/Qt/5.9/gcc_64/mkspecs/common/unix.conf \
 		/home/fellipe/Qt/5.9/gcc_64/mkspecs/common/linux.conf \
@@ -227,7 +227,7 @@ DIST          = /home/fellipe/Qt/5.9/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/fellipe/Qt/5.9/gcc_64/mkspecs/features/exceptions.prf \
 		/home/fellipe/Qt/5.9/gcc_64/mkspecs/features/yacc.prf \
 		/home/fellipe/Qt/5.9/gcc_64/mkspecs/features/lex.prf \
-		../esteanografia/esteanografia.pro  ../esteanografia/main_color.cpp
+		../esteanografia/esteanografia.pro  ../esteanografia/main.cpp
 QMAKE_TARGET  = esteanografia
 DESTDIR       = 
 TARGET        = esteanografia
@@ -633,8 +633,8 @@ compiler_clean:
 
 ####### Compile
 
-main_color.o: ../esteanografia/main_color.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main_color.o ../esteanografia/main_color.cpp
+main.o: ../esteanografia/main.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../esteanografia/main.cpp
 
 ####### Install
 

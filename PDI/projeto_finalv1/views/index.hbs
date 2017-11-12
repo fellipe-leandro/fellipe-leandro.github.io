@@ -1,0 +1,31 @@
+<div>
+  <h2>Please upload 2 images to combine.</h2>
+
+  <p><em>Note:Alphabetic order: Main Image, Image to Hide</em></p>
+</div>
+
+<form method="post" action="/upload" enctype="multipart/form-data">
+  <div class="form-group">
+    <input type="file" multiple="multiple" name="file">
+  </div>
+
+  <div class="form-group">
+    <input type="submit" value="Submit" class="btn btn-primary">
+  </div>
+</form>
+<div>
+  <h2>Please upload an image to Split.</h2>
+
+  <p><em>Note: please ensure it's at least 960 x 300 pixels in size.</em></p>
+</div>
+<form method="post" action="/uploadSplit" enctype="multipart/form-data">
+  <div class="form-group">
+    <input type="file" name="fileToSplit">
+  </div>
+
+  <div class="form-group">
+    <input type="submit" value="Submit to Split" class="btn btn-primary">
+  </div>
+</form>
+
+
