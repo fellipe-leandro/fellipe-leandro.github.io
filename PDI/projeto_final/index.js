@@ -185,28 +185,84 @@ app.post('/upload', upload.array('file',2), function(req, res, next){
          */
         cv.readImage( src0, function (err,	im) {
         	cv.readImage(src1,function(err1,im1){
-        		var newImg= new cv.Matrix(im.height(),im.width());
+        		newImg= new cv.Matrix(im.height(),im.width());
+        		//im.cvtColor("CV_BGR2GRAY");
+        		//im1.cvtColor("CV_BGR2GRAY");
+
+        		var aux1=im1.toArray();
+        		var aux2=im1.type();
+
+        		
+        		var arrFinal=cv.Matrix.fromArray(aux1,aux2).toArray();
+        		console.log(arrFinal.length);
+        		console.log(arrFinal[0].length);
+        		console.log(arrFinal[0][0].length);
+        		//console.log('dimensao arrFinal');
+
+        		//img_gray=new cv.Matrix(im.height(),im.width())
         		var valor1;
         		var valor2;
         		var MSBytes;
         		var LSBytes;
+<<<<<<< HEAD
         		//console.log(im.type())
         		for(var i=0; i<im.height();i=i+1){
         			for(var j=0; j<im.width();j=j+1){
         				valor1=im.get(i,j);
         				valor2=im1.get(i,j);
+=======
+        		img_gray = im.copy();
+        		//console.log(img_gray.type());
+
+        		var chanIm0=im.split()[0];
+        		var chanIm1=im1.split()[0];
+        		var intIm0Matrix=new cv.Matrix();
+        		var intIm1Matrix=new cv.Matrix();
+        		chanIm0.convertTo(intIm0Matrix,cv.Constants.CV_8U);
+        		chanIm1.convertTo(intIm1Matrix,cv.Constants.CV_8U);
+        		//intIm0Matrix.cvtColor("CV_BGR2GRAY");
+        		//intIm1Matrix.cvtColor("CV_BGR2GRAY");
+        		var arr0 =intIm0Matrix.toArray();
+        		var arr1 =intIm1Matrix.toArray();
+        		//console.log(arr0.length);
+        		//console.log(a[2][2]);
+        		//console.log(a[2][2]<<1);
+        		//var d= c+b;
+        		//console.log(a[2][2]);
+        		//console.log(a[3][3]);
+        		//console.log(d);
+        		//intInputMatrix.get(1,1);
+
+        		//console.log(im1.get(5,3));
+        		for(var i=0; i<arr0.length;i=i+1){
+        			for(var j=0; j<arr0[i].length;j=j+1){
+        				//valor1=im.get(i,j);
+        				//valor2=im1.get(i,j);
+        				valor1=arr0[i][j];
+        				valor2=arr1[i][j];
+>>>>>>> dd034c4ae47577722b339e94cd90a59b686f9666
         				MSBytes=valor1&0xF8;
-        				console.log('Antes');
-        				console.log(valor2);
-        				console.log('Depois');
-        				console.log(MSBytes);
+        				//console.log('Antes');
+        				//console.log(valor2);
+        				//console.log('Depois');
+        				//console.log(MSBytes);
         				LSBytes=valor2&0xE0; //selecionar os 3 MS bits e zerar os 5 LS bit
-        				newImg.at(i,j)=(MSBytes|(LSBytes>>5));
+        				//console.log('Antes')
+        				//console.log(valor1);
+        				//console.log('Depois')
+        				//console.log(MSBytes);
+        				arrFinal[i][j][0]=(MSBytes|(LSBytes>>5));
+        				//console.log(arrFinal[i][j])
 
 
 
         			}
         		}
+
+        		var matFinal=cv.Matrix.fromArray(arrFinal,cv.Constants.CV_8UC3);
+        		matFinal.cvtColor("CV_BGR2GRAY");
+        		matFinal.save('first.jpg')
+
 
         	});
 
