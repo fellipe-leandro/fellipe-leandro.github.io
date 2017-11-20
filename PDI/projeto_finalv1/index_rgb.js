@@ -190,9 +190,9 @@
 	        		im1.resize(width,height);
 	        		newImg= new cv.Matrix(height,width);
 
-	        		im.cvtColor("CV_BGR2GRAY");
-	        		im1.cvtColor("CV_BGR2GRAY");
-
+	        		//newImg= new cv.Matrix(im.height(),im.width());
+	        		//im.cvtColor("CV_BGR2GRAY");
+	        		//im1.cvtColor("CV_BGR2GRAY");
 
 	        		var aux1=im1.toArray();
 	        		var aux2=im1.type();
@@ -210,16 +210,20 @@
 	        		img_gray = im.copy();
 	        		//console.log(img_gray.type());
 
-	        		var chanIm0=im.split()[0];
-	        		var chanIm1=im1.split()[0];
+	        		//var chanIm0=im.split()[0];
+	        		//var chanIm1=im1.split()[0];
 	        		var intIm0Matrix=new cv.Matrix();
 	        		var intIm1Matrix=new cv.Matrix();
-	        		chanIm0.convertTo(intIm0Matrix,cv.Constants.CV_8U);
-	        		chanIm1.convertTo(intIm1Matrix,cv.Constants.CV_8U);
+	        		im.convertTo(intIm0Matrix,cv.Constants.CV_8UC3);
+	        		im1.convertTo(intIm1Matrix,cv.Constants.CV_8UC3);
 	        		//intIm0Matrix.cvtColor("CV_BGR2GRAY");
 	        		//intIm1Matrix.cvtColor("CV_BGR2GRAY");
 	        		var arr0 =intIm0Matrix.toArray();
 	        		var arr1 =intIm1Matrix.toArray();
+	        		console.log(arr0[0]);
+	        		console.log(arr0[0][0].length);
+	        		console.log(arr0);
+	        		console.log(arr1)
 	        		//console.log(arr0.length);
 	        		//console.log(a[2][2]);
 	        		//console.log(a[2][2]<<1);
@@ -232,10 +236,11 @@
 	        		//console.log(im1.get(5,3));
 	        		for(var i=0; i<arr0.length;i=i+1){
 	        			for(var j=0; j<arr0[i].length;j=j+1){
+	        				for(var k=0;k<arr0[i][j].length;k=k+1){
 	        				//valor1=im.get(i,j);
 	        				//valor2=im1.get(i,j);
-	        				valor1=arr0[i][j];
-	        				valor2=arr1[i][j];
+	        				valor1=arr0[i][j][k];
+	        				valor2=arr1[i][j][k];
 	        				MSBytes=valor1&0xF8;
 	        				//console.log('Antes');
 	        				//console.log(valor2);
@@ -246,14 +251,14 @@
 	        				//console.log(valor1);
 	        				//console.log('Depois')
 	        				//console.log(MSBytes);
-	        				arrFinal[i][j][0]=(MSBytes|(LSBytes>>5)); //criando três canais devido a chamada da função
+	        				arrFinal[i][j][k]=(MSBytes|(LSBytes>>5)); //criando três canais devido a chamada da função
 	        														  //from Array que se seguirá	
-	        				arrFinal[i][j][1]=(MSBytes|(LSBytes>>5));
-	        				arrFinal[i][j][2]=(MSBytes|(LSBytes>>5));
+	        				//arrFinal[i][j][1]=(MSBytes|(LSBytes>>5));
+	        				//arrFinal[i][j][2]=(MSBytes|(LSBytes>>5));
 	        				//console.log(arrFinal[i][j])
 
 
-
+	        			     }
 	        			}
 	        		}
 	        		console.log(arrFinal.length);
@@ -263,7 +268,7 @@
                     //var matFinal=new cv.Matrix();
                     //arrFinal.convertTo(matFinal,cv.Constants.CV_8UC3);
 	        		var matFinal=cv.Matrix.fromArray(arrFinal,cv.Constants.CV_8UC3);
-	        		matFinal.cvtColor("CV_BGR2GRAY");
+	        		//matFinal.cvtColor("CV_BGR2GRAY");
 	        		matFinal.save('public/final.png');
 
 				});
@@ -295,13 +300,13 @@
 	                if (width < 1 || height < 1) throw new Error('Image has no size');
 	                //inputIm.save('mais_olha.pgm');
 
-	        		 var inputChan1=inputIm.split()[0]; //selecionar um unico canal
+	        		 //var inputChan1=inputIm.split()[0]; //selecionar um unico canal
 	        		 //console.log(inputChan1);
 	        		 var intInputMatrix= new cv.Matrix();  //matriz de inteiros
-	        		 inputChan1.convertTo(intInputMatrix,cv.Constants.CV_8U); //converte matriz de entrada para matriz
+	        		 inputIm.convertTo(intInputMatrix,cv.Constants.CV_8UC3); //converte matriz de entrada para matriz
 	        		 														  //matriz de inteiros com 1  canal 
 	        		 var arrIn=intInputMatrix.toArray(); 	//converte matriz para array. 
-	        		 console.log(arrIn[0][0]);//debug
+	        		 //console.log(arrIn[0][0]);//debug
 
 	        		var inputAux1=inputIm.toArray(); //
 	        	    var inputAux2=inputIm.type();
@@ -310,12 +315,14 @@
 	        		var arrHide=cv.Matrix.fromArray(inputAux1,inputAux2).toArray();
 	        		 for (var i=0; i<arrIn.length;i++){
 	        		 	for(var j=0;j<arrIn[i].length;j++){
-	        		 		arrMain[i][j][0] = arrIn[i][j]&0xF8;
-	        		 		arrHide[i][j][0]=(arrIn[i][j]&0x07)<<5;
-	        		 		arrMain[i][j][1] = arrIn[i][j]&0xF8;
-	        		 		arrHide[i][j][1]=(arrIn[i][j]&0x07)<<5;
-							arrMain[i][j][2] = arrIn[i][j]&0xF8;
-	        		 		arrHide[i][j][2]=(arrIn[i][j]&0x07)<<5;
+	        		 		for(var k=0;k<arrIn[i][j].length;k=k+1){
+	        		 			arrMain[i][j][k] = arrIn[i][j][k]&0xF8;
+	        		 			arrHide[i][j][k]=(arrIn[i][j][k]&0x07)<<5;
+	        		 			//arrMain[i][j][1] = arrIn[i][j]&0xF8;
+	        		 			//arrHide[i][j][1]=(arrIn[i][j]&0x07)<<5;
+								//arrMain[i][j][2] = arrIn[i][j]&0xF8;
+	        		 			//arrHide[i][j][2]=(arrIn[i][j]&0x07)<<5;
+	        		 		}
 
 
 	        		 	}
@@ -325,10 +332,10 @@
 	        		 console.log(arrHide[0][0].length);
 
 	        		 var matMain=cv.Matrix.fromArray(arrMain,cv.Constants.CV_8UC3);
-	        		 matMain.cvtColor("CV_BGR2GRAY");
+	        		 //matMain.cvtColor("CV_BGR2GRAY");
 	        		 matMain.save('public/Main.jpg')
 	        		 var matHide=cv.Matrix.fromArray(arrHide,cv.Constants.CV_8UC3);
-	        		 matHide.cvtColor("CV_BGR2GRAY");
+	        		 //matHide.cvtColor("CV_BGR2GRAY");
 	        		 matHide.save('public/Hide.jpg')
 
 	        		 
