@@ -106,6 +106,7 @@ uglobal
   img               dd ?
   img1Dir           dd ?
   img2Dir           dd ?
+  hImg1             dd ?
 
 endg
 
@@ -134,18 +135,43 @@ endp
 
 proc insertImg1Proc, .self,.button
 begin
-        push eax
-       ; exec img1Name, TEdit:GetText ;Get Text
-       ; mov [img1Dir],eax
+        exec img1Name, TEdit:GetText ;Get Text
+        mov [img1Dir],eax
       ;  getfile img0,"pic.png"
+        stdcall FileOpen,[img1Dir]
+        jc      .file_not_found
+        stdcall FileWriteString, [STDERR], <'Deu bom.', 13, 10>
+        mov     [hImg1],eax
+        jmp     .retProc
+
+       .file_not_found:
+       stdcall FileWriteString, [STDERR], <'Coudnt open file.', 13, 10>
+       jmp .retProc
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         stdcall CreateImagePNG,image2,sizeof.image2
         mov [img],eax
 
-;        set [img2Name],TEdit:Text,eax
+        set [img2Name],TEdit:Text,[img1Dir]
 
        set [imageForm],TImageLabel:Image,[img]
 
         pop eax
+        .retProc:
         return
 endp
 proc insertImg2Proc,.self,.button
@@ -181,4 +207,4 @@ start:
         stdcall TerminateAll    ; from the stack
 
 ; end of main program
-
+                                  
