@@ -72,6 +72,12 @@
                      OnClick=insertImg2Proc,\
                      Caption='Insert Img 2'
 
+            ObjTemplate tfChild, TButton, btnStegJoin, \
+                        x=550, y=150, \
+                        width = 120, height = 24,\
+                        Visible = TRUE, \
+                        OnClick = stegJoinProc,\
+                        Caption = 'Steg-Join'
 
            ObjTemplate tfChild, TButton, btnNegative, \
                         x=550, y=70, \
@@ -102,12 +108,18 @@
   aCaption text 'Fellipe Leandro'
   aCaption2 text 'UFRN - 2017'
   warningCopy text 'Nada Digitado'
+  insertIm1Msg text 'Im 1 inserida'
+  insertIm2Msg text 'Im 2 inserida'
+  insertIm1MsgErr text 'Erro ao Inserir Im1'
+  insertIm2MsgErr text 'Erro ao Inserir Im2'
+
   char text 'a'
   image file 'abraco_bike.png'
   sizeof.image = $ - image
   ;image2 file 'linux_wall.png'
   ;sizeof.image2=$-image2
   name1 text 'fromfresh1.ppm'
+  nameSteg text 'stegJoin.ppm'
   countLines dd 0
   mychar dd 'c'
   ;pixel dd 'c'
@@ -127,12 +139,21 @@ endg
     img2Dir           dd ?
     hImg1             dd ?
     hImg2             dd ?
+    hImgNeg           dd ?
     msg               dd ?
     hFile             dd ?
     pixel_array       rd  1444
     pixel             dd ?
     cvtMsg            dd ?
     fd_out             rd 1
+    ;Variaveis para esteganografia
+    MSbits          dd ?
+    LSbits          dd ?
+    stegPixelFinal  dd ?
+    hImgSteg        dd ?
+    pixel2          dd ?
+    msgIm2          dd ?
+
 
 
   endg
@@ -161,10 +182,12 @@ proc insertImg1Proc, .self,.button
           stdcall FileOpen,[img1Dir]        ;Open File with name img1Dir
           jc      .file_not_found
           mov     [hImg1],eax               ; move eax to hImg1
+          stdcall ShowMessage,[frmMain],smiInformation,"Dialog",insertIm1Msg ,smbOK
           jmp .retProc
 
   .file_not_found:
           stdcall FileWriteString, [STDERR], <'Coudnt open file.', 13, 10>
+          stdcall ShowMessage,[frmMain],smiError,"Dialog",insertIm1MsgErr ,smbOK
           jmp .retProc
           pop eax
 .retProc:
@@ -172,8 +195,24 @@ proc insertImg1Proc, .self,.button
   endp
 
 
-  proc insertImg2Proc,.self,.button
+ proc insertImg2Proc,.self,.button
   begin
+          push eax
+          exec img2Name, TEdit:GetText      ;Get Text
+          mov [img2Dir],eax
+          stdcall FileOpen,[img2Dir]        ;Open File with name img1Dir
+          jc      .file_not_found
+          mov     [hImg2],eax               ; move eax to hImg1
+          stdcall ShowMessage,[frmMain],smiInformation,"Dialog",insertIm2Msg ,smbOK
+          jmp .retProc
+
+  .file_not_found:
+          stdcall FileWriteString, [STDERR], <'Coudnt open file.', 13, 10>
+          stdcall ShowMessage,[frmMain],smiError,"Dialog",insertIm2MsgErr ,smbOK
+          jmp .retProc
+          pop eax
+.retProc:
+
   return
   endp
 
@@ -285,6 +324,78 @@ proc insertImg1Proc, .self,.button
   proc blurProc
   begin
   return
+  endp
+
+proc stegJoinProc
+    begin
+
+         mov eax,8
+         mov ebx,nameSteg
+         mov ecx,777
+         int 0x80
+         mov [hImgSteg],eax
+         mov [countLines],0
+  .readLines:
+         stdcall FileReadLine,[hImg1]      ;read line
+         jc      .error_read
+         mov [msg],eax
+         stdcall FileReadLine, [hImg2]
+         jc      .error_read
+         mov [msgIm2], eax
+         cmp  eax,0
+         jne    .readFile
+         jmp    .fim_enquanto
+ .readFile:
+          inc [countLines]
+          cmp [countLines],4
+          jle .readHeader                       ;se count <=4, ir para leitura do cabecalho
+          jmp .readPixels
+ .readHeader:
+           stdcall FileWriteString, [STDERR], [msg]
+           stdcall FileWriteString, [STDERR], <' ',13,10> ; print newline and line feed
+           stdcall FileWriteString, [hImgSteg], [msgIm2]
+           stdcall FileWriteString, [hImgSteg], <' ',13,10> ; print newline and line feed
+          jmp .readLines
+
+ .readPixels:
+          ;stdcall FileWriteString, [STDERR], [msg]
+          ;stdcall FileWriteString, [STDERR], <' ',13,10> ; print newline and line feed
+
+          stdcall StrToNum,[msg]        ;componente da imagem 1
+          mov [pixel],eax
+          stdcall StrToNum,[msgIm2]
+          mov [pixel2],eax
+          ;Steganography process
+          and [pixel],0x00F8
+          and [pixel2],0x00E0
+          shr [pixel2],5        ;right-shift 5 positions
+          mov eax,[pixel2]
+          or eax,[pixel]
+          mov [stegPixelFinal],eax
+          stdcall NumToStr,[stegPixelFinal],ntsDec or ntsUnsigned
+          mov [cvtMsg],eax
+          stdcall FileWriteString, [hImgSteg], [cvtMsg]
+          stdcall FileWriteString,[hImgSteg],<'',13,10>
+           stdcall FileWriteString, [STDERR], [cvtMsg]
+          stdcall FileWriteString,[STDERR],<'',13,10>
+
+         jmp .readLines
+ .fim_enquanto:
+          stdcall FileWriteString, [STDERR], <'Fim do while', 13, 10>
+            mov     eax,6
+            mov     ebx,[hImgSteg]
+            int     0x80
+          jmp .retProc
+ .error_read:
+          stdcall FileWriteString, [STDERR], <'Source file read error.', 13, 10>
+          jmp .retProc
+
+
+
+
+
+ .retProc:
+         return
   endp
 
   ; Main Program

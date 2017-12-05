@@ -100,7 +100,10 @@
   ;image2 file 'linux_wall.png'
   ;sizeof.image2=$-image2
   name1 text 'fromfresh.txt'
+  name2 text 'teste'
   countLines db 0
+  msg_t dd 0,1,2,3,4,5
+
 
 
 
@@ -112,16 +115,17 @@
 
 
   uglobal
-    ClickCount dd ?
-    aClickCount dd ?
+    ClickCount        dd ?
+    aClickCount       dd ?
     textToCopy        dd ?
     img               dd ?
     img1Dir           dd ?
     img2Dir           dd ?
     hImg1             dd ?
-    msg               dd ?
+    hImg2             dd ?
+    msg               rd 50
     hFile             dd ?
-    pixel_array       rd  1444
+    pixel_array       rd 5
 
   endg
 
@@ -143,35 +147,44 @@
 proc insertImg1Proc, .self,.button
   begin
           push eax
+         ; stdcall StrSaveToFile,name2,[msg_t]
           exec img1Name, TEdit:GetText      ;Get Text
           mov [img1Dir],eax
         ;  getfile img0,"pic.png"
           stdcall FileOpen,[img1Dir]        ;Open File with name img1Dir
           jc      .file_not_found
          ; stdcall FileWriteString, [STDERR], <'Deu bom.', 13, 10> ;For debug
-          mov     [hImg1],eax               ; move eax to hImg1
+          mov [hImg1],eax               ; handle to file (pointer)
+          mov  ebx,msg
+         ; stdcall FileOpen,'fromfresh.txt'
+          ;jc .file_not_found
+          ;mov [hImg2],eax
 
-  readLines:
+  .readLines:
           ;cmp [pixel_array+countLines],'EOF'
-          cmp [countLines],1443
-          jne repita
-          jmp fim_enquanto
-  repita: 
+          cmp [countLines],2
+          jne .repita
+          jmp .fim_enquanto
+  .repita:
           inc [countLines]
-
           stdcall FileReadLine,[hImg1]      ;read line
           jc      .error_read
-          mov [msg],eax                     ;move line to variable
-          stdcall StrSaveToFile,name1,[msg] ;writes string [msg] into file name1
-          jmp readLines
-  fim_enquanto:
+          mov [ebx], eax                     ;move line to variable
+          inc ebx
+         ; stdcall StrSaveToFile,name1,[msg] ;writes string [msg] into file name1
+        ; stdcall FileWriteString, [hImg1], [msg]
+          ;stdcall FileReadLine,[hImg2]
+          jmp .readLines
+  .fim_enquanto:
           ;Fazer uma estrutura while(line!=EOF)
+          stdcall StrSaveToFile,name1,[msg] ;writes string [msg] into file name1
+          stdcall FileWriteString, [STDERR], <'Fim do while.', 13, 10>
           jmp     .retProc
-
+;
   .file_not_found:
           stdcall FileWriteString, [STDERR], <'Coudnt open file.', 13, 10>
           jmp .retProc
-
+;
   .error_read:
           stdcall FileWriteString, [STDERR], <'Source file read error.', 13, 10>
           jmp .retProc
@@ -181,9 +194,10 @@ proc insertImg1Proc, .self,.button
     ;        mov [img],eax
     ;       set [img2Name],TEdit:Text,[img1Dir]
     ;      set [imageForm],TImageLabel:Image,[img]
-
+;
           pop eax
 .retProc:
+        ;stdcall FileClose, ebx
           return
   endp
 
