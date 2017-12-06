@@ -45,11 +45,7 @@
                          Visible = TRUE,           \
                          Image = [img],       \
                          Caption = 'LabelForm'
-           ObjTemplate  tfChild, TTreeView, tvFolders,  \
-                       x=450,y=200,\
-                       width = 200,height = 200,\
-                       SplitCell = SplitTest.cellTree,            \
-                       Visible = TRUE
+
            ObjTemplate tfChild,TEdit,img1Name,\
                        x=32,y=8,\
                        width=152,height = 24,\
@@ -79,7 +75,7 @@
                         OnClick = stegJoinProc,\
                         Caption = 'Steg-Join'
             ObjTemplate tfChild, TButton, btnStegSplit, \
-                        x=550, y=180, \
+                        x=550, y=190, \
                         width = 120, height = 24,\
                         Visible = TRUE, \
                         OnClick = stegSplitProc,\
@@ -127,6 +123,8 @@
   ;sizeof.image2=$-image2
   name1 text 'fromfresh1.ppm'
   nameSteg text 'stegJoin.ppm'
+  nameStegMain text 'stegMain.ppm'
+  nameStegHide  text 'stegHide.ppm'
   countLines dd 0
   mychar dd 'c'
   ;pixel dd 'c'
@@ -158,8 +156,12 @@ endg
     LSbits          dd ?
     stegPixelFinal  dd ?
     hImgSteg        dd ?
+    hImgMain        dd ?
+    hImgHide       dd ?
     pixel2          dd ?
     msgIm2          dd ?
+    cvtMsgMain      dd ?
+    cvtMsgHide      dd ?
 
 
 
@@ -404,9 +406,81 @@ proc stegJoinProc,.self,.button
  .retProc:
          return
   endp
-  proc stegSplitProc
+  proc stegSplitProc, .self,.button
        begin
+       mov eax,8
+       mov ebx,nameStegMain   ;create files for Main Image and Hide Image
+       mov ecx,777
+       int 0x80
+       mov [hImgMain],eax
+       mov eax,8
+       mov ebx,nameStegHide
+       mov ecx,777
+       int 0x80
+       mov [hImgHide],eax
+       mov [countLines],0
+       mov [msg],0
+       mov [pixel],0
+       mov [pixel2],0
+       mov [cvtMsg],0
+.readLines:
+      ;Read Lines from uploaded image on field 1
+       stdcall FileReadLine,[hImg1]
+       jc      .error_read
+       mov [msg],eax
+       cmp  eax,0                            ;0 Indicates EOF
+       jne .readFile
+       jmp .fim_enquanto
+.readFile:
+       inc [countLines]
+       cmp [countLines],4
+       jle .readHeader                       ;se count <=4, ir para leitura do cabecalho
+       jmp .readPixels
+ .readHeader:
+       stdcall FileWriteString, [STDERR], [msg]
+       stdcall FileWriteString, [STDERR], <' ',13,10> ; print newline and line feed
+       stdcall FileWriteString, [hImgMain], [msg]
+       stdcall FileWriteString, [hImgMain], <' ',13,10> ; print newline and line feed
+       stdcall FileWriteString, [hImgHide], [msg]
+       stdcall FileWriteString, [hImgHide], <' ',13,10> ; print newline and line feed
+       jmp .readLines
+.readPixels:
+       ;Write Main Image
+       stdcall StrToNum,[msg]        ;componente da imagem
+       mov [pixel],eax
+       mov [pixel2],eax
+       and [pixel2],0x00F8
+       stdcall NumToStr,[pixel2],ntsDec or ntsUnsigned
+       mov [cvtMsg],eax
+       stdcall FileWriteString, [hImgMain], [cvtMsg]
+       stdcall FileWriteString,[hImgMain],<'',13,10>
+       ;Write Hide Image
+       and [pixel],0x0007       ;get 3 first bits
+       shl [pixel],5            ;left-shift by 5
+       stdcall NumToStr,[pixel],ntsDec or ntsUnsigned ;convert to string to write in file
+       mov[cvtMsg],eax                 ;cvtMsg = string that will be write in image
+       stdcall FileWriteString, [hImgHide], [cvtMsg]
+       stdcall FileWriteString,[hImgHide],<'',13,10>
+       jmp .readLines
+.fim_enquanto:
+        stdcall FileWriteString,[STDERR],<'Fim do while',13,10>
+        jmp .retProc
+ .error_read:
+          stdcall FileWriteString, [STDERR], <'Source file read error.', 13, 10>
+          jmp .retProc
 
+
+
+
+
+
+
+
+
+
+
+
+ .retProc:
        return
   endp
 
