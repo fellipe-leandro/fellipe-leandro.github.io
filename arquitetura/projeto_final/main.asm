@@ -78,6 +78,13 @@
                         Visible = TRUE, \
                         OnClick = stegJoinProc,\
                         Caption = 'Steg-Join'
+            ObjTemplate tfChild, TButton, btnStegSplit, \
+                        x=550, y=180, \
+                        width = 120, height = 24,\
+                        Visible = TRUE, \
+                        OnClick = stegSplitProc,\
+                        Caption = 'Steg-Split'
+
 
            ObjTemplate tfChild, TButton, btnNegative, \
                         x=550, y=70, \
@@ -108,10 +115,10 @@
   aCaption text 'Fellipe Leandro'
   aCaption2 text 'UFRN - 2017'
   warningCopy text 'Nada Digitado'
-  insertIm1Msg text 'Im 1 inserida'
-  insertIm2Msg text 'Im 2 inserida'
-  insertIm1MsgErr text 'Erro ao Inserir Im1'
-  insertIm2MsgErr text 'Erro ao Inserir Im2'
+  insertIm1Msg text 'Img1 inserida com sucesso'
+  insertIm2Msg text 'Img2 inserida com sucesso'
+  insertIm1MsgErr text 'Erro ao Inserir Img1'
+  insertIm2MsgErr text 'Erro ao Inserir Img2'
 
   char text 'a'
   image file 'abraco_bike.png'
@@ -224,7 +231,7 @@ proc insertImg1Proc, .self,.button
          mov ebx,name1
          mov ecx,777
          int 0x80
-         mov [hImg2],eax
+         mov [hImgNeg],eax
         ;stdcall FileCreate,'fromfresh.txt'
         ;stdcall FileOpen,'fromfresh.txt'
         ; jc      .file_not_found
@@ -302,8 +309,8 @@ proc insertImg1Proc, .self,.button
 ;         mov ecx,cvtMsg
 ;         mov edx,4
 ;         int 0x80
-         stdcall FileWriteString, [hImg2], [cvtMsg]
-         stdcall FileWriteString,[hImg2],<'',13,10>
+         stdcall FileWriteString, [hImgNeg], [cvtMsg]
+         stdcall FileWriteString,[hImgNeg],<'',13,10>
 
 
           jmp .readLines
@@ -326,7 +333,7 @@ proc insertImg1Proc, .self,.button
   return
   endp
 
-proc stegJoinProc
+proc stegJoinProc,.self,.button
     begin
 
          mov eax,8
@@ -397,6 +404,13 @@ proc stegJoinProc
  .retProc:
          return
   endp
+  proc stegSplitProc
+       begin
+
+       return
+  endp
+
+
 
   ; Main Program
   start:
