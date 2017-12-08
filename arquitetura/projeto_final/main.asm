@@ -117,7 +117,7 @@
   insertIm2MsgErr text 'Erro ao Inserir Img2'
 
   char text 'a'
-  image file 'abraco_bike.png'
+  image file 'UFRN-PNG.png'
   sizeof.image = $ - image
   ;image2 file 'linux_wall.png'
   ;sizeof.image2=$-image2
@@ -179,6 +179,7 @@ endg
 
           stdcall CreateImagePNG,image,sizeof.image
           mov [img],eax
+
           return
 
   endp
@@ -271,8 +272,8 @@ proc insertImg1Proc, .self,.button
  .readHeader:
            stdcall FileWriteString, [STDERR], [msg]
            stdcall FileWriteString, [STDERR], <' ',13,10> ; print newline and line feed
-           stdcall FileWriteString, [hImg2], [msg]
-           stdcall FileWriteString, [hImg2], <' ',13,10> ; print newline and line feed
+           stdcall FileWriteString, [hImgNeg], [msg]
+           stdcall FileWriteString, [hImgNeg], <' ',13,10> ; print newline and line feed
           jmp .readLines
  .readPixels:
           stdcall FileWriteString, [STDERR], [msg]
@@ -328,6 +329,7 @@ proc insertImg1Proc, .self,.button
           jmp .retProc
 
   .retProc:
+;        set [imageForm],TImageLabel:Image,[hImgNeg]
         return
   endp
   proc blurProc
