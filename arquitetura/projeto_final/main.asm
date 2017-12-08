@@ -80,15 +80,19 @@
                         Visible = TRUE, \
                         OnClick = stegSplitProc,\
                         Caption = 'Steg-Split'
-
-
-           ObjTemplate tfChild, TButton, btnNegative, \
+            ObjTemplate tfChild,TButton,btnAbout,\
+                        x=550,y=230,\
+                        width = 120,height = 24,\
+                        Visible =TRUE,\
+                        OnClick = aboutProc,\
+                        Caption = 'About'
+            ObjTemplate tfChild, TButton, btnNegative, \
                         x=550, y=70, \
                         width = 120, height = 24,\
                         Visible = TRUE, \
                         OnClick = negativeProc,\
                         Caption = 'Negativo'
-          ObjTemplate tfChild or tfEnd,TButton,btnBlur,\
+           ObjTemplate tfChild or tfEnd,TButton,btnBlur,\
                       x=550, y=110,\
                       width=120,height=24,\
                       Visible=TRUE,\
@@ -115,6 +119,7 @@
   insertIm2Msg text 'Img2 inserida com sucesso'
   insertIm1MsgErr text 'Erro ao Inserir Img1'
   insertIm2MsgErr text 'Erro ao Inserir Img2'
+  aboutMsg text 'Aplicativo desenvolvido na disciplina Arquitetura e programacao de Computadores - 2017.2'
 
   char text 'a'
   image file 'UFRN-PNG.png'
@@ -472,21 +477,15 @@ proc stegJoinProc,.self,.button
           jmp .retProc
 
 
-
-
-
-
-
-
-
-
-
-
  .retProc:
        return
   endp
 
-
+ proc aboutProc,.self,.button
+        begin
+         stdcall ShowMessage,[frmMain],smiWarning,"About",aboutMsg ,smbOK
+        return
+ endp
 
   ; Main Program
   start:
