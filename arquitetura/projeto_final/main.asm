@@ -34,8 +34,8 @@
           ObjTemplate  tfParent or tfEnd, TForm, frmMain, \
                        x = 100,        \
                        y = 90,         \
-                       width = 720,    \
-                       height = 480,   \
+                       width = 600,    \
+                       height = 240,   \
                        OnCreate = FormOnCreate,                   \
                        Caption = 'Digital Image Processing App'
 
@@ -69,35 +69,30 @@
                      Caption='Insert Img 2'
 
             ObjTemplate tfChild, TButton, btnStegJoin, \
-                        x=550, y=150, \
+                        x=350, y=60, \
                         width = 120, height = 24,\
                         Visible = TRUE, \
                         OnClick = stegJoinProc,\
                         Caption = 'Steg-Join'
             ObjTemplate tfChild, TButton, btnStegSplit, \
-                        x=550, y=190, \
+                        x=350, y=100, \
                         width = 120, height = 24,\
                         Visible = TRUE, \
                         OnClick = stegSplitProc,\
                         Caption = 'Steg-Split'
             ObjTemplate tfChild,TButton,btnAbout,\
-                        x=550,y=230,\
+                        x=30,y=200,\
                         width = 120,height = 24,\
                         Visible =TRUE,\
                         OnClick = aboutProc,\
                         Caption = 'About'
-            ObjTemplate tfChild, TButton, btnNegative, \
-                        x=550, y=70, \
+            ObjTemplate tfChild or tfEnd, TButton, btnNegative, \
+                        x=350, y=20, \
                         width = 120, height = 24,\
                         Visible = TRUE, \
                         OnClick = negativeProc,\
                         Caption = 'Negativo'
-           ObjTemplate tfChild or tfEnd,TButton,btnBlur,\
-                      x=550, y=110,\
-                      width=120,height=24,\
-                      Visible=TRUE,\
-                      OnClick=blurProc,\
-                      Caption='Blur'
+
 
 
   SplitStart SplitTest
@@ -111,51 +106,38 @@
 
   SplitEnd
 
-  cCaption text 'Clicked: '
-  aCaption text 'Fellipe Leandro'
-  aCaption2 text 'UFRN - 2017'
-  warningCopy text 'Nada Digitado'
   insertIm1Msg text 'Img1 inserida com sucesso'
   insertIm2Msg text 'Img2 inserida com sucesso'
   insertIm1MsgErr text 'Erro ao Inserir Img1'
   insertIm2MsgErr text 'Erro ao Inserir Img2'
-  aboutMsg text 'Aplicativo desenvolvido na disciplina Arquitetura e programacao de Computadores - 2017.2'
+  aboutMsg text 'Aplicativo desenvolvido na disciplina Arquitetura e Programação de Computadores - 2017.2',13,10,'Autores: Felipe Omar e Fellipe Augusto',13,10,'Orientador: Prof. Alberto Nicolau'
 
-  char text 'a'
   image file 'UFRN-PNG.png'
   sizeof.image = $ - image
-  ;image2 file 'linux_wall.png'
-  ;sizeof.image2=$-image2
-  name1 text 'fromfresh1.ppm'
+  name1 text 'fromfresh1.ppm'  ;names for created files
   nameSteg text 'stegJoin.ppm'
   nameStegMain text 'stegMain.ppm'
   nameStegHide  text 'stegHide.ppm'
   countLines dd 0
-  mychar dd 'c'
-  ;pixel dd 'c'
-  file_name db 'b'
-  end_of_file dd 'EOF'
+
 
 
 endg
 
 
   uglobal
-    ClickCount dd ?
-    aClickCount dd ?
-    textToCopy        dd ?
-    img               dd ?
-    img1Dir           dd ?
-    img2Dir           dd ?
-    hImg1             dd ?
-    hImg2             dd ?
-    hImgNeg           dd ?
-    msg               dd ?
+
+    img               dd ?  ;to load logo image
+    img1Dir           dd ?  ;image1 filename
+    img2Dir           dd ?  ;image2 filename
+    hImg1             dd ?  ; handle for image1
+    hImg2             dd ?  ;handle for image2
+    hImgNeg           dd ?  ;handle for negative image
+    msg               dd ?  ;pixel value as string
     hFile             dd ?
-    pixel_array       rd  1444
-    pixel             dd ?
-    cvtMsg            dd ?
-    fd_out             rd 1
+    pixel             dd ?  ;pixel value as number
+    cvtMsg            dd ?  ;modified pixel value as string
+    fd_out             rd 1 ;file descriptor for syscall
     ;Variaveis para esteganografia
     MSbits          dd ?
     LSbits          dd ?
@@ -177,10 +159,6 @@ endg
 
   proc FormOnCreate as TObject.OnCreate
   begin
-  ;        mov eax,1
-
-
-   ;
 
           stdcall CreateImagePNG,image,sizeof.image
           mov [img],eax
@@ -223,7 +201,7 @@ proc insertImg1Proc, .self,.button
 
   .file_not_found:
           stdcall FileWriteString, [STDERR], <'Coudnt open file.', 13, 10>
-          stdcall ShowMessage,[frmMain],smiError,"Dialog",insertIm2MsgErr ,smbOK
+          stdcall ShowMessage,[frmMain],smiError,"Dialog",insertIm2MsgErr ,smbOK ;show dialog box with message
           jmp .retProc
           pop eax
 .retProc:
@@ -235,7 +213,7 @@ proc insertImg1Proc, .self,.button
   proc negativeProc,.self,.button
   begin
          xor ebx,ebx
-         mov eax,8
+         mov eax,8      ;syscall to create File.
          mov ebx,name1
          mov ecx,777
          int 0x80
@@ -272,12 +250,12 @@ proc insertImg1Proc, .self,.button
   .readFile:
           inc [countLines]
           cmp [countLines],4
-          jle .readHeader                       ;se count <=4, ir para leitura do cabecalho
+          jle .readHeader                       ;se count <=4, ir para leitura do cabecalho, que cotem 4 linhas
           jmp .readPixels
  .readHeader:
-           stdcall FileWriteString, [STDERR], [msg]
+           stdcall FileWriteString, [STDERR], [msg]       ;print on terminal
            stdcall FileWriteString, [STDERR], <' ',13,10> ; print newline and line feed
-           stdcall FileWriteString, [hImgNeg], [msg]
+           stdcall FileWriteString, [hImgNeg], [msg]       ;print on file
            stdcall FileWriteString, [hImgNeg], <' ',13,10> ; print newline and line feed
           jmp .readLines
  .readPixels:
@@ -287,7 +265,7 @@ proc insertImg1Proc, .self,.button
           mov [pixel],eax                     ;pixel is a number variable
           ;add [pixel],5
           mov edx,255
-          sub edx,[pixel]
+          sub edx,[pixel]                    ;edx=255-pixel_value
           mov [pixel],edx
           ;mov ebx,5
           stdcall NumToStr,[pixel],ntsDec or ntsUnsigned
@@ -337,10 +315,7 @@ proc insertImg1Proc, .self,.button
 ;        set [imageForm],TImageLabel:Image,[hImgNeg]
         return
   endp
-  proc blurProc
-  begin
-  return
-  endp
+
 
 proc stegJoinProc,.self,.button
     begin
