@@ -9,6 +9,9 @@ Access my projects on Digital Image Processing!
 Access my projects on x86 Assembly Programming!
 [Assembly Projects](arquitetura/arc_index.html)
 
+Currently, I'm developing some projects related to Telecommunication Systems / Signal Processing for a course.
+[Telecomm Prototyping](https://github.com/fellipe-leandro/fellipe_DCO2004)
+
 
 
 # About
