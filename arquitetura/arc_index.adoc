@@ -5,7 +5,7 @@ This page is about the projects that I'm developing on x86 Assembly language to 
 
 
 * link:senha_tasm.html[Tasm Project] - First Application developed on TASM environment.
-* link:/projeto_final/main.asm [Final Project] - Using the FRESH IDE (https://fresh.flatassembler.net/), 
+* link:projeto_final/main.asm[Final Project] - Using the FRESH IDE (https://fresh.flatassembler.net/), 
 we developed a PDI application that is capable of generates the negative of a 
 image and make a steganography process (hide a image 'inside' the other and recover it wiht a minimum of distortion).
 The executable of the code can be found in the directory *projeto_final/main*
